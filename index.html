@@ -50,10 +50,43 @@ html,body{height:100%;width:100%;background:var(--bg);color:var(--text);font-fam
 .day-dots{display:flex;gap:2px}.dot{width:4px;height:4px;border-radius:50%}
 .dot-meal{background:var(--amber)}.dot-workout{background:var(--green)}
 
-.stats-strip{display:flex;gap:8px;padding:14px 16px;border-bottom:1px solid var(--border)}
-.stat-chip{flex:1;background:var(--surface);border-radius:var(--radius-sm);border:1px solid var(--border);padding:10px 8px;text-align:center}
+.stats-section{padding:12px 16px;border-bottom:1px solid var(--border);display:flex;flex-direction:column;gap:8px}
+.stats-row3{display:flex;gap:8px}
+.stats-row2{display:flex;gap:8px}
+.stat-chip{flex:1;background:var(--surface);border-radius:var(--radius-sm);border:1px solid var(--border);padding:10px 8px;text-align:center;transition:background .15s,transform .1s}
+.stat-chip.tappable{cursor:pointer;border-color:var(--border2)}
+.stat-chip.tappable:active{background:var(--surface2);transform:scale(.97)}
 .stat-val{font-size:20px;font-weight:700;color:var(--accent2);font-family:'DM Mono',monospace}
 .stat-lbl{font-size:10px;color:var(--text3);margin-top:2px}
+.stat-tap-hint{font-size:9px;color:var(--text3);margin-top:3px;opacity:.7}
+.stat-chip-wide{flex:2;background:var(--surface);border-radius:var(--radius-sm);border:1px solid var(--border);padding:10px 12px;display:flex;align-items:center;gap:10px}
+.stat-wide-ico{font-size:22px;flex-shrink:0}
+.stat-wide-body{flex:1;display:flex;flex-direction:column;gap:5px}
+.stat-wide-row{display:flex;align-items:baseline;gap:4px}
+.stat-wide-lbl{font-size:10px;color:var(--text3);flex:1}
+.stat-wide-val{font-size:16px;font-weight:700;color:var(--red);font-family:'DM Mono',monospace}
+.stat-wide-unit{font-size:10px;color:var(--text3)}
+
+/* DRILL DOWN */
+.drill-empty{text-align:center;padding:40px 20px;color:var(--text3);font-size:13px}
+.drill-item{background:var(--surface);border-radius:var(--radius-sm);border:1px solid var(--border);padding:14px 16px;margin-bottom:10px;cursor:pointer;transition:background .15s}
+.drill-item:active{background:var(--surface2)}
+.drill-item-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:6px}
+.drill-item-date{font-family:'DM Mono',monospace;font-size:13px;font-weight:600;color:var(--text)}
+.drill-item-badge{font-size:10px;padding:2px 8px;border-radius:20px;font-weight:500}
+.badge-workout{background:rgba(74,222,128,.15);color:var(--green)}
+.badge-rest{background:rgba(255,255,255,.06);color:var(--text3)}
+.drill-item-body{font-size:12px;color:var(--text2);line-height:1.7}
+.drill-item-row{display:flex;gap:6px;align-items:center;margin-top:3px;flex-wrap:wrap}
+.drill-item-time{font-family:'DM Mono',monospace;font-size:12px;color:var(--accent2);background:rgba(108,99,255,.15);padding:1px 8px;border-radius:10px}
+.drill-item-hr{font-family:'DM Mono',monospace;font-size:12px;color:var(--red);background:rgba(248,113,113,.12);padding:1px 8px;border-radius:10px}
+.drill-meal-grid{display:grid;grid-template-columns:auto 1fr;gap:3px 8px;margin-top:4px}
+.drill-meal-slot{font-size:10px;color:var(--text3);font-weight:500;padding-top:1px}
+.drill-meal-val{font-size:12px;color:var(--text2)}
+.drill-summary{background:var(--surface2);border-radius:var(--radius-sm);padding:12px 14px;margin-bottom:14px;display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.drill-sum-item{text-align:center}
+.drill-sum-val{font-size:18px;font-weight:700;color:var(--accent2);font-family:'DM Mono',monospace}
+.drill-sum-lbl{font-size:10px;color:var(--text3);margin-top:2px}
 
 .section-head{padding:16px 20px 8px;font-size:12px;font-weight:500;letter-spacing:.08em;color:var(--text3);text-transform:uppercase}
 .log-item{margin:0 16px 8px;background:var(--surface);border-radius:var(--radius-sm);border:1px solid var(--border);padding:12px 14px;cursor:pointer;display:flex;align-items:center;gap:12px}
@@ -193,10 +226,49 @@ html,body{height:100%;width:100%;background:var(--bg);color:var(--text);font-fam
       </div>
       <div class="days-grid" id="days-grid"></div>
     </div>
-    <div class="stats-strip">
-      <div class="stat-chip"><div class="stat-val" id="stat-workout">0</div><div class="stat-lbl">이번달 운동</div></div>
-      <div class="stat-chip"><div class="stat-val" id="stat-meal">0</div><div class="stat-lbl">식단 기록</div></div>
-      <div class="stat-chip"><div class="stat-val" id="stat-streak">0</div><div class="stat-lbl">연속 운동</div></div>
+    <!-- STATS GRID -->
+    <div class="stats-section">
+      <!-- Row 1: tappable 3 chips -->
+      <div class="stats-row3">
+        <div class="stat-chip tappable" onclick="openDrill('workout')">
+          <div class="stat-val" id="stat-workout">0</div>
+          <div class="stat-lbl">이번달 운동</div>
+          <div class="stat-tap-hint">탭해서 보기</div>
+        </div>
+        <div class="stat-chip tappable" onclick="openDrill('meal')">
+          <div class="stat-val" id="stat-meal">0</div>
+          <div class="stat-lbl">식단 기록</div>
+          <div class="stat-tap-hint">탭해서 보기</div>
+        </div>
+        <div class="stat-chip tappable" onclick="openDrill('time')">
+          <div class="stat-val" id="stat-time">0h</div>
+          <div class="stat-lbl">총 운동 시간</div>
+          <div class="stat-tap-hint">탭해서 보기</div>
+        </div>
+      </div>
+      <!-- Row 2: heart rate + streak -->
+      <div class="stats-row2">
+        <div class="stat-chip-wide">
+          <div class="stat-wide-ico">❤️</div>
+          <div class="stat-wide-body">
+            <div class="stat-wide-row">
+              <span class="stat-wide-lbl">평균 심박수</span>
+              <span class="stat-wide-val" id="stat-hr-avg">—</span>
+              <span class="stat-wide-unit">bpm</span>
+            </div>
+            <div class="stat-wide-row">
+              <span class="stat-wide-lbl">최대 심박수 평균</span>
+              <span class="stat-wide-val" id="stat-hr-max">—</span>
+              <span class="stat-wide-unit">bpm</span>
+            </div>
+          </div>
+        </div>
+        <div class="stat-chip">
+          <div class="stat-val" id="stat-streak">0</div>
+          <div class="stat-lbl">연속 운동</div>
+          <div class="stat-tap-hint">&nbsp;</div>
+        </div>
+      </div>
     </div>
     <div class="section-head">최근 기록</div>
     <div id="recent-logs"></div>
@@ -389,6 +461,21 @@ html,body{height:100%;width:100%;background:var(--bg);color:var(--text);font-fam
 
 <div class="snack" id="snack"></div>
 
+<!-- DRILL-DOWN SHEET -->
+<div class="overlay" id="drill-overlay" onclick="handleDrillClick(event)">
+  <div class="sheet" id="drill-sheet">
+    <div class="sheet-handle"></div>
+    <div class="sheet-header">
+      <div>
+        <div class="sheet-title" id="drill-title"></div>
+        <div class="sheet-date" id="drill-sub"></div>
+      </div>
+      <button class="close-btn" onclick="closeDrill()">✕</button>
+    </div>
+    <div class="sheet-body" id="drill-body"></div>
+  </div>
+</div>
+
 <script>
 const KEY='workout_v3';
 let db=JSON.parse(localStorage.getItem(KEY)||'{}');
@@ -427,15 +514,149 @@ function changeMonth(dir){
 }
 
 function renderStats(){
-  let workouts=0,meals=0,s=0;
+  let workouts=0,meals=0,totalMins=0,streak=0;
+  let hrAvgSum=0,hrAvgCnt=0,hrMaxSum=0,hrMaxCnt=0;
   const days=new Date(curYear,curMonth+1,0).getDate();
-  for(let d=1;d<=days;d++){const e=db[dateKey(curYear,curMonth,d)]||{};if(e.workout)workouts++;if(e.meals&&(e.meals.morning||e.meals.noon||e.meals.evening))meals++;}
+  for(let d=1;d<=days;d++){
+    const e=db[dateKey(curYear,curMonth,d)]||{};
+    if(e.workout===true) workouts++;
+    if(e.meals&&(e.meals.morning||e.meals.noon||e.meals.evening)) meals++;
+    if(e.time){
+      ['upper','lower','cardio'].forEach(cat=>{
+        const t=e.time[cat]||{}; totalMins+=(t.h||0)*60+(t.m||0);
+      });
+    }
+    if(e.watch){
+      if(e.watch.hrAvg){hrAvgSum+=e.watch.hrAvg;hrAvgCnt++;}
+      if(e.watch.hrMax){hrMaxSum+=e.watch.hrMax;hrMaxCnt++;}
+    }
+  }
   const t=new Date();
-  for(let i=0;i<365;i++){const d=new Date(t);d.setDate(d.getDate()-i);const k=dateKey(d.getFullYear(),d.getMonth(),d.getDate());if(db[k]&&db[k].workout)s++;else if(i>0)break;}
+  for(let i=0;i<365;i++){const d=new Date(t);d.setDate(d.getDate()-i);const k=dateKey(d.getFullYear(),d.getMonth(),d.getDate());if(db[k]&&db[k].workout)streak++;else if(i>0)break;}
   document.getElementById('stat-workout').textContent=workouts;
   document.getElementById('stat-meal').textContent=meals;
-  document.getElementById('stat-streak').textContent=s;
+  const h=Math.floor(totalMins/60), m=totalMins%60;
+  document.getElementById('stat-time').textContent=totalMins===0?'0h':(h>0?(h+'h'+(m>0?' '+m+'m':'')):(m+'m'));
+  document.getElementById('stat-streak').textContent=streak;
+  document.getElementById('stat-hr-avg').textContent=hrAvgCnt>0?Math.round(hrAvgSum/hrAvgCnt):'—';
+  document.getElementById('stat-hr-max').textContent=hrMaxCnt>0?Math.round(hrMaxSum/hrMaxCnt):'—';
 }
+
+// DRILL DOWN
+function getMonthEntries(){
+  const days=new Date(curYear,curMonth+1,0).getDate();
+  const result=[];
+  for(let d=1;d<=days;d++){
+    const key=dateKey(curYear,curMonth,d), e=db[key];
+    if(e) result.push({key,d,e});
+  }
+  return result.sort((a,b)=>b.key.localeCompare(a.key));
+}
+
+function fmtDate(key){
+  const[y,m,d]=key.split('-');
+  const dn=['일','월','화','수','목','금','토'];
+  return `${parseInt(m)}월 ${parseInt(d)}일 (${dn[new Date(parseInt(y),parseInt(m)-1,parseInt(d)).getDay()]})`;
+}
+
+function fmtTime(timeObj){
+  if(!timeObj) return null;
+  const total=['upper','lower','cardio'].reduce((s,c)=>{const t=timeObj[c]||{};return s+(t.h||0)*60+(t.m||0);},0);
+  if(total===0) return null;
+  const h=Math.floor(total/60),m=total%60;
+  return h>0?(h+'h'+(m>0?' '+m+'m':'')):(m+'m');
+}
+
+function openDrill(type){
+  const entries=getMonthEntries();
+  const mn=['1월','2월','3월','4월','5월','6월','7월','8월','9월','10월','11월','12월'];
+  document.getElementById('drill-sub').textContent=`${curYear}년 ${mn[curMonth]}`;
+  let title='', html='';
+
+  if(type==='workout'){
+    title='💪 이번달 운동 기록';
+    const wEntries=entries.filter(({e})=>e.workout===true);
+    if(!wEntries.length){html='<div class="drill-empty">이번달 운동 기록이 없어요</div>';}
+    else{
+      // summary
+      let totalM=0;
+      wEntries.forEach(({e})=>{if(e.time)['upper','lower','cardio'].forEach(cat=>{const t=e.time[cat]||{};totalM+=(t.h||0)*60+(t.m||0);});});
+      const sh=Math.floor(totalM/60),sm=totalM%60;
+      html+=`<div class="drill-summary"><div class="drill-sum-item"><div class="drill-sum-val">${wEntries.length}</div><div class="drill-sum-lbl">운동 일수</div></div><div class="drill-sum-item"><div class="drill-sum-val">${totalM===0?'0m':(sh>0?sh+'h'+(sm?' '+sm+'m':''):(sm+'m'))}</div><div class="drill-sum-lbl">총 운동 시간</div></div></div>`;
+      html+=wEntries.map(({key,e})=>{
+        const ex=e.exercises||{}, time=e.time||{};
+        let cats=[];
+        if((ex.upper||[]).length||e.customUpper) cats.push(`<span class="tag tag-upper">상체</span>`);
+        if((ex.lower||[]).length||e.customLower) cats.push(`<span class="tag tag-lower">하체</span>`);
+        if((ex.cardio||[]).length||e.customCardio) cats.push(`<span class="tag tag-cardio">유산소</span>`);
+        const timeStr=fmtTime(time);
+        const hr=e.watch&&e.watch.hrAvg?`<span class="drill-item-hr">❤️ ${e.watch.hrAvg}bpm</span>`:'';
+        const exercises=[...(ex.upper||[]),...(ex.lower||[]),...(ex.cardio||[]),[e.customUpper,e.customLower,e.customCardio].filter(Boolean).join(' ')].filter(Boolean).join(', ');
+        return `<div class="drill-item" onclick="selectDay(...'${key}'.split('-').map((v,i)=>i===1?parseInt(v)-1:parseInt(v)));closeDrill()">
+          <div class="drill-item-header"><span class="drill-item-date">${fmtDate(key)}</span><span class="drill-item-badge badge-workout">운동함</span></div>
+          <div class="drill-item-row">${cats.join('')}${timeStr?`<span class="drill-item-time">⏱ ${timeStr}</span>`:''}${hr}</div>
+          ${exercises?`<div class="drill-item-body" style="margin-top:6px">${exercises}</div>`:''}
+          ${e.memo?`<div class="drill-item-body" style="color:var(--text3);margin-top:4px">${e.memo}</div>`:''}
+        </div>`;
+      }).join('');
+    }
+  } else if(type==='meal'){
+    title='🍽️ 이번달 식단 기록';
+    const mEntries=entries.filter(({e})=>e.meals&&(e.meals.morning||e.meals.noon||e.meals.evening||e.meals.snack));
+    if(!mEntries.length){html='<div class="drill-empty">이번달 식단 기록이 없어요</div>';}
+    else{
+      html+=`<div class="drill-summary"><div class="drill-sum-item"><div class="drill-sum-val">${mEntries.length}</div><div class="drill-sum-lbl">기록 일수</div></div><div class="drill-sum-item"><div class="drill-sum-val">${Math.round(mEntries.length/new Date(curYear,curMonth+1,0).getDate()*100)}%</div><div class="drill-sum-lbl">이번달 달성률</div></div></div>`;
+      html+=mEntries.map(({key,e})=>{
+        const m=e.meals||{};
+        const rows=[['아침',m.morning],['점심',m.noon],['저녁',m.evening],['간식',m.snack]].filter(([,v])=>v);
+        return `<div class="drill-item" onclick="selectDay(...'${key}'.split('-').map((v,i)=>i===1?parseInt(v)-1:parseInt(v)));closeDrill()">
+          <div class="drill-item-header"><span class="drill-item-date">${fmtDate(key)}</span></div>
+          <div class="drill-meal-grid">${rows.map(([slot,val])=>`<span class="drill-meal-slot">${slot}</span><span class="drill-meal-val">${val}</span>`).join('')}</div>
+        </div>`;
+      }).join('');
+    }
+  } else if(type==='time'){
+    title='⏱ 이번달 운동 시간';
+    const tEntries=entries.filter(({e})=>{
+      if(!e.time) return false;
+      return ['upper','lower','cardio'].some(cat=>{const t=e.time[cat]||{};return (t.h||0)+(t.m||0)>0;});
+    });
+    if(!tEntries.length){html='<div class="drill-empty">운동 시간 기록이 없어요</div>';}
+    else{
+      let totalM=0;
+      tEntries.forEach(({e})=>['upper','lower','cardio'].forEach(cat=>{const t=(e.time||{})[cat]||{};totalM+=(t.h||0)*60+(t.m||0);}));
+      const sh=Math.floor(totalM/60),sm=totalM%60;
+      const avg=Math.round(totalM/tEntries.length);
+      html+=`<div class="drill-summary"><div class="drill-sum-item"><div class="drill-sum-val">${sh>0?sh+'h'+(sm?' '+sm+'m':''):(sm+'m')}</div><div class="drill-sum-lbl">총 운동 시간</div></div><div class="drill-sum-item"><div class="drill-sum-val">${avg>=60?Math.floor(avg/60)+'h '+(avg%60?avg%60+'m':''):(avg+'m')}</div><div class="drill-sum-lbl">평균 운동 시간</div></div></div>`;
+      html+=tEntries.map(({key,e})=>{
+        const cats=[];
+        const time=e.time||{};
+        ['upper','lower','cardio'].forEach(cat=>{
+          const t=time[cat]||{}, mins=(t.h||0)*60+(t.m||0);
+          if(mins>0){
+            const lbl={upper:'💪 상체',lower:'🦵 하체',cardio:'🏃 유산소'}[cat];
+            const ts=mins>=60?Math.floor(mins/60)+'h'+(mins%60?' '+mins%60+'m':''):(mins+'m');
+            cats.push(`${lbl} <span class="drill-item-time">${ts}</span>`);
+          }
+        });
+        const totalDayM=['upper','lower','cardio'].reduce((s,cat)=>{const t=time[cat]||{};return s+(t.h||0)*60+(t.m||0);},0);
+        const tStr=fmtTime(time)||'';
+        return `<div class="drill-item" onclick="selectDay(...'${key}'.split('-').map((v,i)=>i===1?parseInt(v)-1:parseInt(v)));closeDrill()">
+          <div class="drill-item-header"><span class="drill-item-date">${fmtDate(key)}</span><span class="drill-item-time">합계 ${tStr}</span></div>
+          <div class="drill-item-body" style="margin-top:6px;display:flex;flex-direction:column;gap:3px">${cats.join('<br>')}</div>
+        </div>`;
+      }).join('');
+    }
+  }
+
+  document.getElementById('drill-title').textContent=title;
+  document.getElementById('drill-body').innerHTML=html;
+  document.getElementById('drill-overlay').classList.add('open');
+  document.body.style.overflow='hidden';
+}
+
+function closeDrill(){document.getElementById('drill-overlay').classList.remove('open');document.body.style.overflow='';}
+function handleDrillClick(e){if(e.target===document.getElementById('drill-overlay'))closeDrill();}
 
 function renderRecent(){
   const el=document.getElementById('recent-logs');
