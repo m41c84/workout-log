@@ -28,10 +28,20 @@ html,body{height:100%;width:100%;background:var(--bg);color:var(--text);font-fam
 .header{display:flex;align-items:center;justify-content:space-between;padding:16px 20px 12px;border-bottom:1px solid var(--border);flex-shrink:0}
 .header-title{font-size:22px;font-weight:700;letter-spacing:-.5px}
 .header-sub{font-size:12px;color:var(--text3);margin-top:1px;font-family:'DM Mono',monospace}
-.month-nav{display:flex;align-items:center;gap:12px}
-.nav-btn{width:32px;height:32px;border-radius:50%;background:var(--surface);border:1px solid var(--border2);color:var(--text2);font-size:14px;cursor:pointer;display:flex;align-items:center;justify-content:center}
+.settings-btn{width:36px;height:36px;border-radius:50%;background:var(--surface);border:1px solid var(--border2);color:var(--text2);cursor:pointer;display:flex;align-items:center;justify-content:center;transition:background .15s}
+.settings-btn:active{background:var(--surface2)}
+.month-nav-row{display:flex;align-items:center;justify-content:center;gap:16px;padding:10px 0 12px}
+.nav-btn{width:34px;height:34px;border-radius:50%;background:var(--surface);border:1px solid var(--border2);color:var(--text2);font-size:16px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:background .15s}
 .nav-btn:active{background:var(--surface2)}
-.month-label{font-size:15px;font-weight:500;min-width:80px;text-align:center}
+.month-label{font-size:17px;font-weight:700;letter-spacing:-.3px;min-width:90px;text-align:center}
+.settings-action-btn{width:100%;display:flex;align-items:center;gap:14px;padding:14px 16px;background:var(--surface);border-radius:var(--radius-sm);border:1px solid var(--border);cursor:pointer;text-align:left;transition:background .15s,transform .1s;font-family:'Noto Sans KR',sans-serif}
+.settings-action-btn:active{background:var(--surface2);transform:scale(.98)}
+.settings-action-export{border-color:rgba(108,99,255,.25)}.settings-action-import{border-color:rgba(74,222,128,.2)}
+.settings-action-ico{font-size:22px;flex-shrink:0}
+.settings-action-body{flex:1}
+.settings-action-title{font-size:14px;font-weight:600;color:var(--text);margin-bottom:2px}
+.settings-action-desc{font-size:11px;color:var(--text3)}
+.settings-action-arrow{font-size:18px;color:var(--text3)}
 
 .scroll-area{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch}
 
@@ -197,6 +207,27 @@ html,body{height:100%;width:100%;background:var(--bg);color:var(--text);font-fam
 .pwa-tip p{font-size:12px;color:var(--text2);line-height:1.6}
 .pwa-tip strong{color:var(--accent2);font-weight:500}
 .pwa-close{background:none;border:none;color:var(--text3);font-size:16px;cursor:pointer;padding:0 0 0 8px;flex-shrink:0;align-self:center}
+
+/* BACKUP / RESTORE */
+.backup-bar{display:flex;gap:8px;padding:12px 16px;border-top:1px solid var(--border);background:var(--bg)}
+.backup-btn{flex:1;display:flex;align-items:center;justify-content:center;gap:6px;padding:9px 0;border-radius:var(--radius-sm);font-family:'Noto Sans KR',sans-serif;font-size:13px;font-weight:500;cursor:pointer;border:1px solid var(--border2);transition:background .15s,transform .1s}
+.backup-btn:active{transform:scale(.97)}
+.backup-btn-export{background:rgba(108,99,255,.15);color:var(--accent2);border-color:rgba(108,99,255,.3)}
+.backup-btn-import{background:rgba(74,222,128,.1);color:var(--green);border-color:rgba(74,222,128,.25)}
+.backup-btn-ico{font-size:15px}
+
+/* CONFIRM DIALOG */
+.confirm-overlay{position:fixed;inset:0;background:rgba(0,0,0,.75);backdrop-filter:blur(8px);z-index:300;display:flex;align-items:center;justify-content:center;opacity:0;pointer-events:none;transition:opacity .2s;padding:24px}
+.confirm-overlay.open{opacity:1;pointer-events:all}
+.confirm-box{background:var(--bg2);border-radius:20px;border:1px solid var(--border2);padding:24px 20px;width:100%;max-width:320px}
+.confirm-title{font-size:17px;font-weight:700;margin-bottom:8px}
+.confirm-body{font-size:13px;color:var(--text2);line-height:1.7;margin-bottom:20px}
+.confirm-body strong{color:var(--text);font-weight:600}
+.confirm-btns{display:flex;gap:8px}
+.confirm-btn{flex:1;padding:12px;border-radius:var(--radius-sm);font-family:'Noto Sans KR',sans-serif;font-size:14px;font-weight:600;cursor:pointer;border:none;transition:opacity .15s}
+.confirm-btn-cancel{background:var(--surface2);color:var(--text2)}
+.confirm-btn-ok{background:var(--accent);color:#fff}
+.confirm-btn-danger{background:var(--red);color:#fff}
 </style>
 </head>
 <body>
@@ -206,11 +237,12 @@ html,body{height:100%;width:100%;background:var(--bg);color:var(--text);font-fam
       <div class="header-title">운동일지 💪</div>
       <div class="header-sub" id="today-label"></div>
     </div>
-    <div class="month-nav">
-      <button class="nav-btn" onclick="changeMonth(-1)">‹</button>
-      <div class="month-label" id="month-label"></div>
-      <button class="nav-btn" onclick="changeMonth(1)">›</button>
-    </div>
+    <button class="settings-btn" onclick="openSettings()" aria-label="설정">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <circle cx="12" cy="12" r="3"/>
+        <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/>
+      </svg>
+    </button>
   </div>
 
   <div class="scroll-area">
@@ -220,6 +252,12 @@ html,body{height:100%;width:100%;background:var(--bg);color:var(--text);font-fam
       <button class="pwa-close" onclick="document.getElementById('pwa-tip').remove()">✕</button>
     </div>
     <div class="calendar-wrap">
+      <!-- 월 네비게이터 -->
+      <div class="month-nav-row">
+        <button class="nav-btn" onclick="changeMonth(-1)">‹</button>
+        <div class="month-label" id="month-label"></div>
+        <button class="nav-btn" onclick="changeMonth(1)">›</button>
+      </div>
       <div class="weekdays">
         <div class="weekday">일</div><div class="weekday">월</div><div class="weekday">화</div>
         <div class="weekday">수</div><div class="weekday">목</div><div class="weekday">금</div><div class="weekday">토</div>
@@ -473,6 +511,77 @@ html,body{height:100%;width:100%;background:var(--bg);color:var(--text);font-fam
       <button class="close-btn" onclick="closeDrill()">✕</button>
     </div>
     <div class="sheet-body" id="drill-body"></div>
+  </div>
+</div>
+
+<!-- SETTINGS SHEET -->
+<div class="overlay" id="settings-overlay" onclick="handleSettingsClick(event)">
+  <div class="sheet">
+    <div class="sheet-handle"></div>
+    <div class="sheet-header">
+      <div>
+        <div class="sheet-title">설정</div>
+        <div class="sheet-date">운동일지 데이터 관리</div>
+      </div>
+      <button class="close-btn" onclick="closeSettings()">✕</button>
+    </div>
+    <div class="sheet-body">
+      <div class="block">
+        <div class="block-title">💾 데이터 백업</div>
+        <p style="font-size:12px;color:var(--text3);line-height:1.7;margin-bottom:14px">앱을 새로 설치하거나 HTML을 업데이트할 때<br>기록이 사라지지 않도록 미리 백업하세요.</p>
+        <div style="display:flex;flex-direction:column;gap:10px">
+          <button class="settings-action-btn settings-action-export" onclick="exportData()">
+            <div class="settings-action-ico">📤</div>
+            <div class="settings-action-body">
+              <div class="settings-action-title">백업 내보내기</div>
+              <div class="settings-action-desc">모든 기록을 JSON 파일로 저장해요</div>
+            </div>
+            <div class="settings-action-arrow">›</div>
+          </button>
+          <button class="settings-action-btn settings-action-import" onclick="document.getElementById('import-file').click()">
+            <div class="settings-action-ico">📥</div>
+            <div class="settings-action-body">
+              <div class="settings-action-title">백업 불러오기</div>
+              <div class="settings-action-desc">저장해둔 JSON 파일로 기록을 복원해요</div>
+            </div>
+            <div class="settings-action-arrow">›</div>
+          </button>
+          <input type="file" id="import-file" accept=".json" style="display:none" onchange="importData(event)">
+        </div>
+      </div>
+
+      <div class="block">
+        <div class="block-title">ℹ️ 앱 정보</div>
+        <div style="background:var(--surface);border-radius:var(--radius-sm);border:1px solid var(--border);padding:14px 16px;display:flex;flex-direction:column;gap:8px">
+          <div style="display:flex;justify-content:space-between;align-items:center">
+            <span style="font-size:13px;color:var(--text2)">저장된 기록</span>
+            <span style="font-size:13px;font-weight:600;color:var(--accent2);font-family:'DM Mono',monospace" id="settings-count">—</span>
+          </div>
+          <div style="height:1px;background:var(--border)"></div>
+          <div style="display:flex;justify-content:space-between;align-items:center">
+            <span style="font-size:13px;color:var(--text2)">저장 방식</span>
+            <span style="font-size:12px;color:var(--text3)">기기 로컬 저장</span>
+          </div>
+          <div style="height:1px;background:var(--border)"></div>
+          <div style="display:flex;justify-content:space-between;align-items:center">
+            <span style="font-size:13px;color:var(--text2)">버전</span>
+            <span style="font-size:12px;color:var(--text3);font-family:'DM Mono',monospace">v3.0</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- CONFIRM DIALOG -->
+<div class="confirm-overlay" id="confirm-overlay">
+  <div class="confirm-box">
+    <div class="confirm-title" id="confirm-title"></div>
+    <div class="confirm-body" id="confirm-body"></div>
+    <div class="confirm-btns">
+      <button class="confirm-btn confirm-btn-cancel" onclick="closeConfirm()">취소</button>
+      <button class="confirm-btn" id="confirm-ok-btn" onclick="confirmOk()">확인</button>
+    </div>
   </div>
 </div>
 
@@ -797,8 +906,78 @@ function saveEntry(){
   saveDB();closeModal();renderCalendar();showSnack('✅ 저장되었습니다!');
 }
 
-function showSnack(msg){const s=document.getElementById('snack');s.textContent=msg;s.classList.add('show');setTimeout(()=>s.classList.remove('show'),2200);}
-function autoResize(el){el.style.height='auto';el.style.height=el.scrollHeight+'px';}
+function openSettings(){
+  document.getElementById('settings-count').textContent=Object.keys(db).length+'일';
+  document.getElementById('settings-overlay').classList.add('open');
+  document.body.style.overflow='hidden';
+}
+function closeSettings(){document.getElementById('settings-overlay').classList.remove('open');document.body.style.overflow='';}
+function handleSettingsClick(e){if(e.target===document.getElementById('settings-overlay'))closeSettings();}
+
+
+function exportData(){
+  const count=Object.keys(db).length;
+  if(count===0){showSnack('⚠️ 내보낼 기록이 없어요');return;}
+  const payload=JSON.stringify({version:'workout_v3',exportedAt:new Date().toISOString(),count,data:db},null,2);
+  const blob=new Blob([payload],{type:'application/json'});
+  const url=URL.createObjectURL(blob);
+  const a=document.createElement('a');
+  const d=new Date();
+  a.href=url;
+  a.download=`운동일지_백업_${d.getFullYear()}${String(d.getMonth()+1).padStart(2,'0')}${String(d.getDate()).padStart(2,'0')}.json`;
+  a.click();
+  URL.revokeObjectURL(url);
+  closeSettings();
+  showSnack(`✅ ${count}일 기록을 내보냈어요`);
+}
+
+let pendingImportData=null;
+
+function importData(event){
+  const file=event.target.files[0];
+  if(!file)return;
+  const reader=new FileReader();
+  reader.onload=e=>{
+    try{
+      const parsed=JSON.parse(e.target.result);
+      if(!parsed.data||typeof parsed.data!=='object') throw new Error('형식 오류');
+      pendingImportData=parsed.data;
+      const existing=Object.keys(db).length;
+      const incoming=Object.keys(parsed.data).length;
+      showConfirm(
+        '📥 백업 불러오기',
+        `<strong>${incoming}일</strong>치 기록을 불러옵니다.<br><br>현재 기기에 <strong>${existing}일</strong>치 기록이 있어요.<br>기존 기록과 <strong>합쳐집니다</strong> (같은 날짜는 백업 파일로 덮어씀).`,
+        '불러오기',
+        false,
+        ()=>{
+          db={...db,...pendingImportData};
+          saveDB();renderCalendar();
+          showSnack(`✅ ${incoming}일 기록을 불러왔어요`);
+          pendingImportData=null;
+        }
+      );
+    }catch(err){
+      showSnack('❌ 파일을 읽을 수 없어요. 올바른 백업 파일인지 확인해주세요.');
+    }
+  };
+  reader.readAsText(file);
+  event.target.value='';
+}
+
+let confirmCallback=null;
+function showConfirm(title,body,okLabel,isDanger,cb){
+  document.getElementById('confirm-title').textContent=title;
+  document.getElementById('confirm-body').innerHTML=body;
+  const btn=document.getElementById('confirm-ok-btn');
+  btn.textContent=okLabel;
+  btn.className='confirm-btn '+(isDanger?'confirm-btn-danger':'confirm-btn-ok');
+  confirmCallback=cb;
+  document.getElementById('confirm-overlay').classList.add('open');
+}
+function closeConfirm(){document.getElementById('confirm-overlay').classList.remove('open');confirmCallback=null;}
+function confirmOk(){if(confirmCallback)confirmCallback();closeConfirm();}
+
+
 
 (function(){
   const t=new Date(),days=['일요일','월요일','화요일','수요일','목요일','금요일','토요일'];
