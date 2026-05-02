@@ -176,6 +176,11 @@ html,body{height:100%;width:100%;background:var(--bg);color:var(--text);font-fam
 .drum-divider{width:1px;background:var(--border);margin:10px 0;flex-shrink:0}
 .time-display{font-size:12px;color:var(--accent2);font-family:'DM Mono',monospace;font-weight:500;background:var(--surface2);padding:5px 10px;border-radius:6px;white-space:nowrap;min-width:52px;text-align:center;flex-shrink:0}
 
+/* REPS / SETS PICKER */
+.rs-picker-wrap{display:flex;align-items:center;gap:6px;margin-top:2px}
+.rs-col-label{font-size:11px;color:var(--text3);font-weight:500;white-space:nowrap;flex-shrink:0}
+.rs-display{font-size:12px;color:var(--accent2);font-family:'DM Mono',monospace;font-weight:500;background:var(--surface2);padding:5px 10px;border-radius:6px;white-space:nowrap;min-width:64px;text-align:center;flex-shrink:0}
+
 /* APPLE WATCH */
 .watch-hint{font-size:11px;color:var(--text3);margin-bottom:12px;line-height:1.7;background:rgba(96,165,250,.08);border:1px solid rgba(96,165,250,.15);border-radius:var(--radius-sm);padding:10px 12px}
 .watch-hint strong{color:var(--blue)}
@@ -367,9 +372,22 @@ html,body{height:100%;width:100%;background:var(--bg);color:var(--text);font-fam
             <div class="ex-chip" data-cat="upper" onclick="toggleChip(this)">로우</div>
           </div>
           <input class="custom-input" id="custom-upper" placeholder="기타 상체 운동 직접 입력…">
-          <div class="time-row">
+          <div class="rs-picker-wrap">
+            <div class="rs-col-label">횟수</div>
+            <div class="drum-picker" id="dp-upper-reps">
+              <div class="drum-sel"></div>
+              <div class="drum-col" id="dc-upper-reps"><div class="drum-list" id="dl-upper-reps"></div></div>
+            </div>
+            <div class="rs-col-label">세트</div>
+            <div class="drum-picker" id="dp-upper-sets">
+              <div class="drum-sel"></div>
+              <div class="drum-col" id="dc-upper-sets"><div class="drum-list" id="dl-upper-sets"></div></div>
+            </div>
+            <div class="rs-display" id="rd-upper">—</div>
+          </div>
+          <div class="time-row" style="margin-top:8px">
             <span class="time-row-label">운동 시간</span>
-            <div class="drum-picker" id="dp-upper">
+            <div class="drum-picker" id="dp-upper-time">
               <div class="drum-sel"></div>
               <div class="drum-col" id="dc-upper-h"><div class="drum-list" id="dl-upper-h"></div></div>
               <div class="drum-divider"></div>
@@ -397,9 +415,22 @@ html,body{height:100%;width:100%;background:var(--bg);color:var(--text);font-fam
             <div class="ex-chip" data-cat="lower" onclick="toggleChip(this)">불가리안스쿼트</div>
           </div>
           <input class="custom-input" id="custom-lower" placeholder="기타 하체 운동 직접 입력…">
-          <div class="time-row">
+          <div class="rs-picker-wrap">
+            <div class="rs-col-label">횟수</div>
+            <div class="drum-picker" id="dp-lower-reps">
+              <div class="drum-sel"></div>
+              <div class="drum-col" id="dc-lower-reps"><div class="drum-list" id="dl-lower-reps"></div></div>
+            </div>
+            <div class="rs-col-label">세트</div>
+            <div class="drum-picker" id="dp-lower-sets">
+              <div class="drum-sel"></div>
+              <div class="drum-col" id="dc-lower-sets"><div class="drum-list" id="dl-lower-sets"></div></div>
+            </div>
+            <div class="rs-display" id="rd-lower">—</div>
+          </div>
+          <div class="time-row" style="margin-top:8px">
             <span class="time-row-label">운동 시간</span>
-            <div class="drum-picker" id="dp-lower">
+            <div class="drum-picker" id="dp-lower-time">
               <div class="drum-sel"></div>
               <div class="drum-col" id="dc-lower-h"><div class="drum-list" id="dl-lower-h"></div></div>
               <div class="drum-divider"></div>
@@ -449,23 +480,6 @@ html,body{height:100%;width:100%;background:var(--bg);color:var(--text);font-fam
           애플워치 <strong>피트니스 앱 → 날짜 탭</strong>에서 수치를 확인 후 아래에 직접 입력하세요.
         </div>
 
-        <div style="font-size:11px;color:var(--text2);font-weight:500;margin-bottom:8px">활동 링</div>
-        <div class="rings-row">
-          <div class="ring-card">
-            <div class="ring-header"><div class="ring-dot rm"></div><div class="ring-lbl">움직이기</div></div>
-            <div class="watch-input-wrap"><input class="w-inp" id="w-move" type="number" inputmode="numeric" placeholder="0"><span class="w-unit">kcal</span></div>
-          </div>
-          <div class="ring-card">
-            <div class="ring-header"><div class="ring-dot re"></div><div class="ring-lbl">운동 분</div></div>
-            <div class="watch-input-wrap"><input class="w-inp" id="w-exercise" type="number" inputmode="numeric" placeholder="0"><span class="w-unit">분</span></div>
-          </div>
-          <div class="ring-card">
-            <div class="ring-header"><div class="ring-dot rs"></div><div class="ring-lbl">일어서기</div></div>
-            <div class="watch-input-wrap"><input class="w-inp" id="w-stand" type="number" inputmode="numeric" placeholder="0"><span class="w-unit">시간</span></div>
-          </div>
-        </div>
-
-        <div style="font-size:11px;color:var(--text2);font-weight:500;margin:10px 0 8px">운동 세부 데이터</div>
         <div class="watch-metrics">
           <div class="metric-card">
             <div class="metric-lbl"><span class="metric-ico">❤️</span> 평균 심박수</div>
@@ -478,10 +492,6 @@ html,body{height:100%;width:100%;background:var(--bg);color:var(--text);font-fam
           <div class="metric-card">
             <div class="metric-lbl"><span class="metric-ico">🔥</span> 소모 칼로리</div>
             <div class="watch-input-wrap"><input class="w-inp" id="w-cal" type="number" inputmode="numeric" placeholder="—"><span class="w-unit">kcal</span></div>
-          </div>
-          <div class="metric-card">
-            <div class="metric-lbl"><span class="metric-ico">🚶</span> 걸음 수</div>
-            <div class="watch-input-wrap"><input class="w-inp" id="w-steps" type="number" inputmode="numeric" placeholder="—"><span class="w-unit">보</span></div>
           </div>
         </div>
       </div>
@@ -784,41 +794,70 @@ function renderRecent(){
       if(!tags.includes('tag-upper')&&!tags.includes('tag-lower')&&!tags.includes('tag-cardio')) tags+='<span class="tag tag-upper">운동완료</span>';
     }
     const w=entry.watch||{};
-    if(w.move||w.hrAvg||w.cal) tags+='<span class="tag tag-watch">⌚</span>';
+    if(w.hrAvg||w.hrMax||w.cal) tags+='<span class="tag tag-watch">⌚</span>';
     const title=entry.workout?'운동함':(entry.workout===false?'쉬는 날':'기록있음');
     return `<div class="log-item" onclick="selectDay(${y},${parseInt(m)-1},${parseInt(d)})"><div class="log-date"><span style="font-size:10px;color:var(--text3)">${mon}</span><span class="log-date-num">${d}</span></div><div class="log-info"><div class="log-title">${title}${entry.memo?' · '+entry.memo.slice(0,14)+(entry.memo.length>14?'…':''):''}</div><div class="log-tags">${tags}</div></div><div class="log-arrow">›</div></div>`;
   }).join('');
 }
 
+// 특정 날짜 이전의 가장 최근 기록 반환
+function getLastEntry(beforeKey){
+  const keys=Object.keys(db)
+    .filter(k=>k<beforeKey && db[k] && db[k].workout===true)
+    .sort();
+  return keys.length ? db[keys[keys.length-1]] : null;
+}
+
 function selectDay(y,m,d){selectedDate=dateKey(y,m,d);renderCalendar();openModal(y,m,d);}
 
 function openModal(y,m,d){
-  const key=dateKey(y,m,d),entry=db[key]||{};
+  const key=dateKey(y,m,d), entry=db[key]||{};
   const dn=['일','월','화','수','목','금','토'],mn=['1월','2월','3월','4월','5월','6월','7월','8월','9월','10월','11월','12월'];
   document.getElementById('modal-title').textContent=`${m+1}월 ${d}일 (${dn[new Date(y,m,d).getDay()]})`;
   document.getElementById('modal-date').textContent=`${y}년 ${mn[m]}`;
+
+  // 이 날짜에 기록이 없으면 가장 최근 기록을 기본값으로 사용
+  const isNew=!db[key];
+  const lastEntry=isNew ? getLastEntry(key) : null;
+
   const meals=entry.meals||{};
-  ['morning','noon','evening','snack'].forEach(k=>{document.getElementById('meal-'+k).value=meals[k]||'';autoResize(document.getElementById('meal-'+k));});
-  workoutDone=entry.workout; updateWorkoutToggle();
-  const ex=entry.exercises||{};
+  ['morning','noon','evening','snack'].forEach(k=>{
+    document.getElementById('meal-'+k).value=meals[k]||'';
+    autoResize(document.getElementById('meal-'+k));
+  });
+
+  workoutDone=entry.workout??null;
+  updateWorkoutToggle();
+
+  // 운동 칩
+  const src = isNew && lastEntry ? lastEntry : entry;
+  const ex=(src.exercises)||{};
   document.querySelectorAll('.ex-chip').forEach(chip=>{
-    const cat=chip.dataset.cat;chip.className='ex-chip';
-    if((ex[cat]||[]).includes(chip.textContent))chip.classList.add('sel-'+cat);
+    const cat=chip.dataset.cat; chip.className='ex-chip';
+    if((ex[cat]||[]).includes(chip.textContent)) chip.classList.add('sel-'+cat);
   });
-  document.getElementById('custom-upper').value=entry.customUpper||'';
-  document.getElementById('custom-lower').value=entry.customLower||'';
-  document.getElementById('custom-cardio').value=entry.customCardio||'';
-  // time drums
-  const time=entry.time||{};
+  document.getElementById('custom-upper').value=(isNew&&lastEntry?lastEntry.customUpper:entry.customUpper)||'';
+  document.getElementById('custom-lower').value=(isNew&&lastEntry?lastEntry.customLower:entry.customLower)||'';
+  document.getElementById('custom-cardio').value=(isNew&&lastEntry?lastEntry.customCardio:entry.customCardio)||'';
+
+  // 횟수·세트 (이 날 기록 우선, 없으면 최근 기록)
+  const rsBase = entry.repsSets || (lastEntry?.repsSets) || {};
+  ['upper','lower'].forEach(cat=>{
+    setRSPicker(cat, rsBase[cat]?.reps||'—', rsBase[cat]?.sets||'—', false);
+  });
+
+  // 운동 시간 (이 날 기록 우선, 없으면 최근 기록)
+  const timeBase = entry.time || (lastEntry?.time) || {};
   ['upper','lower','cardio'].forEach(cat=>{
-    const t=time[cat]||{h:0,m:0};
-    setDrum(cat,'h',t.h,false);
-    setDrum(cat,'m',Math.round((t.m||0)/5),false);
-    updateTD(cat);
+    const t=timeBase[cat]||{h:0,m:0};
+    setTimeDrum(cat, t.h||0, t.m||0, false);
   });
-  // watch
+
+  // 애플워치
   const w=entry.watch||{};
-  ['move','exercise','stand','hr-avg','hr-max','cal','steps'].forEach(id=>{document.getElementById('w-'+id).value=w[id.replace('-','')]||'';});
+  document.getElementById('w-hr-avg').value = w.hrAvg || (isNew && lastEntry?.watch?.hrAvg ? lastEntry.watch.hrAvg : '') || '';
+  document.getElementById('w-hr-max').value = w.hrMax || (isNew && lastEntry?.watch?.hrMax ? lastEntry.watch.hrMax : '') || '';
+  document.getElementById('w-cal').value   = w.cal   || (isNew && lastEntry?.watch?.cal ? lastEntry.watch.cal : '') || '';
   document.getElementById('memo').value=entry.memo||'';
   document.getElementById('modal').classList.add('open');
   document.body.style.overflow='hidden';
@@ -833,55 +872,106 @@ function updateWorkoutToggle(){
 }
 function toggleChip(el){const cls='sel-'+el.dataset.cat;el.classList.contains(cls)?(el.className='ex-chip'):(el.className='ex-chip',el.classList.add(cls));}
 
-// DRUM PICKERS
-const H_ITEMS=[...Array(4)].map((_,i)=>i===0?'0h':i+'h');
-const M_ITEMS=['0m','5m','10m','15m','20m','25m','30m','35m','40m','45m','50m','55m'];
-const DS={};
+// DRUM PICKERS — generic engine
 const ITEM_H=36;
+const _drumState={};
 
-function buildDrums(){
-  ['upper','lower','cardio'].forEach(cat=>{
-    DS[cat]={h:0,m:0};
-    _buildCol(cat,'h',H_ITEMS);
-    _buildCol(cat,'m',M_ITEMS);
-  });
+function _buildDrum(id,items,onChange){
+  const list=document.getElementById('dl-'+id);
+  list.innerHTML=items.map(v=>`<div class="drum-item">${v}</div>`).join('');
+  _drumState[id]=0;
+  _drumSetIdx(id,items,0,false,onChange);
+  _drumDrag(id,items,onChange);
 }
 
-function _buildCol(cat,t,items){
-  document.getElementById(`dl-${cat}-${t}`).innerHTML=items.map((v,i)=>`<div class="drum-item">${v}</div>`).join('');
-  _setupDrag(cat,t,items);
-  setDrum(cat,t,0,false);
-}
-
-function setDrum(cat,t,idx,anim){
-  const items=t==='h'?H_ITEMS:M_ITEMS;
+function _drumSetIdx(id,items,idx,anim,onChange){
   idx=Math.max(0,Math.min(items.length-1,Math.round(idx)));
-  DS[cat][t]=idx;
-  const list=document.getElementById(`dl-${cat}-${t}`);
+  _drumState[id]=idx;
+  const list=document.getElementById('dl-'+id);
+  if(!list)return;
   list.style.transition=anim?'transform .22s cubic-bezier(.25,.46,.45,.94)':'none';
   list.style.transform=`translateY(${-idx*ITEM_H}px)`;
   list.querySelectorAll('.drum-item').forEach((el,i)=>el.classList.toggle('active',i===idx));
-  updateTD(cat);
+  if(onChange) onChange();
 }
 
-function updateTD(cat){
-  const h=DS[cat].h, m=DS[cat].m;
-  const el=document.getElementById('td-'+cat);
-  el.textContent=(h===0&&m===0)?'—':`${h>0?h+'h ':''}${m>0?m*5+'m':''}`.trim();
-}
-
-function _setupDrag(cat,t,items){
-  const col=document.getElementById(`dc-${cat}-${t}`);
+function _drumDrag(id,items,onChange){
+  const col=document.getElementById('dc-'+id);
   let sy=0,si=0,ly=0,lt=0,vy=0,drag=false;
-  const s=y=>{drag=true;sy=ly=y;lt=Date.now();vy=0;si=DS[cat][t];document.getElementById(`dl-${cat}-${t}`).style.transition='none';};
-  const mv=y=>{if(!drag)return;const now=Date.now(),dt=now-lt;vy=dt>0?(y-ly)/dt:0;ly=y;lt=now;setDrum(cat,t,si-(y-sy)/ITEM_H,false);};
-  const e=()=>{if(!drag)return;drag=false;setDrum(cat,t,DS[cat][t]-vy*90/ITEM_H,true);};
+  const s=y=>{drag=true;sy=ly=y;lt=Date.now();vy=0;si=_drumState[id];document.getElementById('dl-'+id).style.transition='none';};
+  const mv=y=>{if(!drag)return;const now=Date.now(),dt=now-lt;vy=dt>0?(y-ly)/dt:0;ly=y;lt=now;_drumSetIdx(id,items,si-(y-sy)/ITEM_H,false,onChange);};
+  const e=()=>{if(!drag)return;drag=false;_drumSetIdx(id,items,_drumState[id]-vy*90/ITEM_H,true,onChange);};
   col.addEventListener('touchstart',ev=>{ev.preventDefault();s(ev.touches[0].clientY);},{passive:false});
   col.addEventListener('touchmove',ev=>{ev.preventDefault();mv(ev.touches[0].clientY);},{passive:false});
   col.addEventListener('touchend',e,{passive:true});
   col.addEventListener('mousedown',ev=>s(ev.clientY));
   window.addEventListener('mousemove',ev=>{if(drag)mv(ev.clientY);});
   window.addEventListener('mouseup',e);
+}
+
+// ── REPS/SETS PICKERS (상체·하체) ──
+const REPS_ITEMS=['—','5회','6회','7회','8회','9회','10회','11회','12회','13회','14회','15회','16회','17회','18회','20회','25회','30회'];
+const SETS_ITEMS=['—','1세트','2세트','3세트','4세트','5세트','6세트'];
+
+function buildRSPickers(){
+  ['upper','lower'].forEach(cat=>{
+    _buildDrum(`${cat}-reps`,REPS_ITEMS,()=>_updateRSDisplay(cat));
+    _buildDrum(`${cat}-sets`,SETS_ITEMS,()=>_updateRSDisplay(cat));
+  });
+}
+
+function _updateRSDisplay(cat){
+  const ri=_drumState[`${cat}-reps`], si=_drumState[`${cat}-sets`];
+  const r=REPS_ITEMS[ri], s=SETS_ITEMS[si];
+  const el=document.getElementById('rd-'+cat);
+  if(r==='—'&&s==='—'){el.textContent='—';return;}
+  el.textContent=[r!=='—'?r:'',s!=='—'?s:''].filter(Boolean).join(' · ');
+}
+
+function setRSPicker(cat,repsVal,setsVal,anim){
+  const ri=REPS_ITEMS.indexOf(repsVal);
+  const si=SETS_ITEMS.indexOf(setsVal);
+  _drumSetIdx(`${cat}-reps`,REPS_ITEMS,ri>=0?ri:0,anim,()=>_updateRSDisplay(cat));
+  _drumSetIdx(`${cat}-sets`,SETS_ITEMS,si>=0?si:0,anim,()=>_updateRSDisplay(cat));
+}
+
+function getRSValue(cat){
+  return{
+    reps: REPS_ITEMS[_drumState[`${cat}-reps`]]||'—',
+    sets: SETS_ITEMS[_drumState[`${cat}-sets`]]||'—',
+  };
+}
+
+// ── TIME PICKERS (상체·하체·유산소) ──
+const H_ITEMS=[...Array(4)].map((_,i)=>i===0?'0h':i+'h');
+const M_ITEMS=['0m','5m','10m','15m','20m','25m','30m','35m','40m','45m','50m','55m'];
+
+function buildTimePickers(){
+  ['upper','lower','cardio'].forEach(cat=>{
+    _buildDrum(`${cat}-h`,H_ITEMS,()=>updateTD(cat));
+    _buildDrum(`${cat}-m`,M_ITEMS,()=>updateTD(cat));
+  });
+}
+
+function updateTD(cat){
+  const h=_drumState[`${cat}-h`]||0, m=_drumState[`${cat}-m`]||0;
+  const el=document.getElementById('td-'+cat);
+  if(!el)return;
+  el.textContent=(h===0&&m===0)?'—':`${h>0?h+'h ':''}${m>0?m*5+'m':''}`.trim();
+}
+
+function setTimeDrum(cat,h,m,anim){
+  _drumSetIdx(`${cat}-h`,H_ITEMS,h,anim,()=>updateTD(cat));
+  _drumSetIdx(`${cat}-m`,M_ITEMS,Math.round((m||0)/5),anim,()=>updateTD(cat));
+}
+
+function getTimeVal(cat){
+  return{h:_drumState[`${cat}-h`]||0, m:(_drumState[`${cat}-m`]||0)*5};
+}
+
+function buildDrums(){
+  buildRSPickers();
+  buildTimePickers();
 }
 
 function saveEntry(){
@@ -895,12 +985,20 @@ function saveEntry(){
     customUpper:document.getElementById('custom-upper').value.trim(),
     customLower:document.getElementById('custom-lower').value.trim(),
     customCardio:document.getElementById('custom-cardio').value.trim(),
-    time:{
-      upper:{h:DS.upper.h, m:DS.upper.m*5},
-      lower:{h:DS.lower.h, m:DS.lower.m*5},
-      cardio:{h:DS.cardio.h, m:DS.cardio.m*5},
+    repsSets:{
+      upper:getRSValue('upper'),
+      lower:getRSValue('lower'),
     },
-    watch:{move:gw('move'),exercise:gw('exercise'),stand:gw('stand'),hrAvg:gw('hr-avg'),hrMax:gw('hr-max'),cal:gw('cal'),steps:gw('steps')},
+    time:{
+      upper:getTimeVal('upper'),
+      lower:getTimeVal('lower'),
+      cardio:getTimeVal('cardio'),
+    },
+    watch:{
+      hrAvg: gw('hr-avg'),
+      hrMax: gw('hr-max'),
+      cal:   gw('cal'),
+    },
     memo:document.getElementById('memo').value.trim(),
   };
   saveDB();closeModal();renderCalendar();showSnack('✅ 저장되었습니다!');
@@ -978,6 +1076,9 @@ function closeConfirm(){document.getElementById('confirm-overlay').classList.rem
 function confirmOk(){if(confirmCallback)confirmCallback();closeConfirm();}
 
 
+
+function showSnack(msg){const s=document.getElementById('snack');s.textContent=msg;s.classList.add('show');setTimeout(()=>s.classList.remove('show'),2200);}
+function autoResize(el){el.style.height='auto';el.style.height=el.scrollHeight+'px';}
 
 (function(){
   const t=new Date(),days=['일요일','월요일','화요일','수요일','목요일','금요일','토요일'];
