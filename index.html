@@ -337,15 +337,6 @@ html,body{height:100%;width:100%;background:var(--bg);color:var(--text);font-fam
     </div>
     <div class="sheet-body">
 
-      <!-- 식단 -->
-      <div class="block">
-        <div class="block-title">🍽️ 식단</div>
-        <div class="meal-row"><div class="meal-lbl">아침</div><textarea class="meal-input" id="meal-morning" placeholder="아침 식사" rows="1" oninput="autoResize(this)"></textarea></div>
-        <div class="meal-row"><div class="meal-lbl">점심</div><textarea class="meal-input" id="meal-noon" placeholder="점심 식사" rows="1" oninput="autoResize(this)"></textarea></div>
-        <div class="meal-row"><div class="meal-lbl">저녁</div><textarea class="meal-input" id="meal-evening" placeholder="저녁 식사" rows="1" oninput="autoResize(this)"></textarea></div>
-        <div class="meal-row"><div class="meal-lbl">간식</div><textarea class="meal-input" id="meal-snack" placeholder="간식" rows="1" oninput="autoResize(this)"></textarea></div>
-      </div>
-
       <!-- 운동 여부 -->
       <div class="block">
         <div class="block-title">✅ 운동 여부</div>
@@ -353,6 +344,15 @@ html,body{height:100%;width:100%;background:var(--bg);color:var(--text);font-fam
           <button class="wt-btn" id="wt-yes" onclick="setWorkout(true)">💪 했어요</button>
           <button class="wt-btn" id="wt-no" onclick="setWorkout(false)">😴 안 했어요</button>
         </div>
+      </div>
+
+      <!-- 식단 -->
+      <div class="block">
+        <div class="block-title">🍽️ 식단</div>
+        <div class="meal-row"><div class="meal-lbl">아침</div><textarea class="meal-input" id="meal-morning" placeholder="아침 식사" rows="1" oninput="autoResize(this)"></textarea></div>
+        <div class="meal-row"><div class="meal-lbl">점심</div><textarea class="meal-input" id="meal-noon" placeholder="점심 식사" rows="1" oninput="autoResize(this)"></textarea></div>
+        <div class="meal-row"><div class="meal-lbl">저녁</div><textarea class="meal-input" id="meal-evening" placeholder="저녁 식사" rows="1" oninput="autoResize(this)"></textarea></div>
+        <div class="meal-row"><div class="meal-lbl">간식</div><textarea class="meal-input" id="meal-snack" placeholder="간식" rows="1" oninput="autoResize(this)"></textarea></div>
       </div>
 
       <!-- 운동 종류 & 시간 -->
@@ -481,11 +481,6 @@ html,body{height:100%;width:100%;background:var(--bg);color:var(--text);font-fam
       <!-- 애플워치 -->
       <div class="block">
         <div class="block-title">⌚ 애플워치 기록</div>
-        <div class="watch-hint">
-          <strong>피트니스 앱 연동 안내</strong><br>
-          Apple Health/HealthKit은 네이티브 앱 전용이라 웹에서 자동 연동이 불가해요.<br>
-          애플워치 <strong>피트니스 앱 → 날짜 탭</strong>에서 수치를 확인 후 아래에 직접 입력하세요.
-        </div>
 
         <div class="watch-metrics">
           <div class="metric-card">
