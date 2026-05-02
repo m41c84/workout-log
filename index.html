@@ -88,7 +88,7 @@ html,body{height:100%;width:100%;background:var(--bg);color:var(--text);font-fam
 .badge-rest{background:rgba(255,255,255,.06);color:var(--text3)}
 .drill-item-body{font-size:12px;color:var(--text2);line-height:1.7}
 .drill-item-row{display:flex;gap:6px;align-items:center;margin-top:3px;flex-wrap:wrap}
-.drill-item-time{font-family:'DM Mono',monospace;font-size:12px;color:var(--accent2);background:rgba(108,99,255,.15);padding:1px 8px;border-radius:10px}
+.drill-item-time{font-family:'DM Mono',monospace;font-size:12px;color:var(--accent2);background:rgba(108,99,255,.15);padding:1px 8px;border-radius:10px;margin-left:4px;vertical-align:middle}
 .drill-item-hr{font-family:'DM Mono',monospace;font-size:12px;color:var(--red);background:rgba(248,113,113,.12);padding:1px 8px;border-radius:10px}
 .drill-meal-grid{display:grid;grid-template-columns:auto 1fr;gap:3px 8px;margin-top:4px}
 .drill-meal-slot{font-size:10px;color:var(--text3);font-weight:500;padding-top:1px}
@@ -101,16 +101,17 @@ html,body{height:100%;width:100%;background:var(--bg);color:var(--text);font-fam
 .section-head{padding:16px 20px 8px;font-size:12px;font-weight:500;letter-spacing:.08em;color:var(--text3);text-transform:uppercase}
 .log-item{margin:0 16px 8px;background:var(--surface);border-radius:var(--radius-sm);border:1px solid var(--border);padding:12px 14px;cursor:pointer;display:flex;align-items:center;gap:12px}
 .log-item:active{background:var(--surface2)}
-.log-date{font-family:'DM Mono',monospace;font-size:13px;color:var(--text2);min-width:36px;text-align:center}
-.log-date-num{font-size:18px;font-weight:500;color:var(--text);display:block}
-.log-info{flex:1}.log-tags{display:flex;gap:4px;flex-wrap:wrap;margin-top:4px}
+
+
+.log-info{flex:1}.log-tags{display:flex;gap:4px;flex-wrap:wrap;margin-top:6px}
 .tag{font-size:10px;padding:2px 8px;border-radius:20px;font-weight:500}
 .tag-upper{background:rgba(108,99,255,.2);color:var(--accent2)}
 .tag-lower{background:rgba(251,191,36,.2);color:var(--amber)}
 .tag-cardio{background:rgba(74,222,128,.2);color:var(--green)}
 .tag-meal{background:rgba(248,113,113,.2);color:var(--red)}
 .tag-watch{background:rgba(96,165,250,.15);color:var(--blue)}
-.log-title{font-size:13px;font-weight:500;color:var(--text)}
+.log-title{font-size:15px;font-weight:600;color:var(--text);letter-spacing:-.2px}
+.log-time{font-size:12px;font-weight:500;color:var(--accent2);font-family:'DM Mono',monospace;margin-left:6px;vertical-align:middle}
 .log-arrow{color:var(--text3);font-size:16px}
 .empty-tip{margin:24px 20px;padding:20px;text-align:center;background:var(--surface);border-radius:var(--radius);border:1px dashed var(--border2)}
 .empty-tip .emoji{font-size:32px;display:block;margin-bottom:8px}
@@ -281,20 +282,17 @@ html,body{height:100%;width:100%;background:var(--bg);color:var(--text);font-fam
         <div class="stat-chip tappable" onclick="openDrill('workout')">
           <div class="stat-val" id="stat-workout">0</div>
           <div class="stat-lbl">이번달 운동</div>
-          <div class="stat-tap-hint">탭해서 보기</div>
         </div>
         <div class="stat-chip tappable" onclick="openDrill('meal')">
           <div class="stat-val" id="stat-meal">0</div>
           <div class="stat-lbl">식단 기록</div>
-          <div class="stat-tap-hint">탭해서 보기</div>
         </div>
         <div class="stat-chip tappable" onclick="openDrill('time')">
           <div class="stat-val" id="stat-time">0h</div>
           <div class="stat-lbl">총 운동 시간</div>
-          <div class="stat-tap-hint">탭해서 보기</div>
         </div>
       </div>
-      <!-- Row 2: heart rate + streak -->
+      <!-- Row 2: heart rate -->
       <div class="stats-row2">
         <div class="stat-chip-wide">
           <div class="stat-wide-ico">❤️</div>
@@ -310,11 +308,6 @@ html,body{height:100%;width:100%;background:var(--bg);color:var(--text);font-fam
               <span class="stat-wide-unit">bpm</span>
             </div>
           </div>
-        </div>
-        <div class="stat-chip">
-          <div class="stat-val" id="stat-streak">0</div>
-          <div class="stat-lbl">연속 운동</div>
-          <div class="stat-tap-hint">&nbsp;</div>
         </div>
       </div>
     </div>
@@ -635,7 +628,7 @@ function changeMonth(dir){
 }
 
 function renderStats(){
-  let workouts=0,meals=0,totalMins=0,streak=0;
+  let workouts=0,meals=0,totalMins=0;
   let hrAvgSum=0,hrAvgCnt=0,hrMaxSum=0,hrMaxCnt=0;
   const days=new Date(curYear,curMonth+1,0).getDate();
   for(let d=1;d<=days;d++){
@@ -653,12 +646,10 @@ function renderStats(){
     }
   }
   const t=new Date();
-  for(let i=0;i<365;i++){const d=new Date(t);d.setDate(d.getDate()-i);const k=dateKey(d.getFullYear(),d.getMonth(),d.getDate());if(db[k]&&db[k].workout)streak++;else if(i>0)break;}
   document.getElementById('stat-workout').textContent=workouts;
   document.getElementById('stat-meal').textContent=meals;
   const h=Math.floor(totalMins/60), m=totalMins%60;
-  document.getElementById('stat-time').textContent=totalMins===0?'0h':(h>0?(h+'h'+(m>0?' '+m+'m':'')):(m+'m'));
-  document.getElementById('stat-streak').textContent=streak;
+  document.getElementById('stat-time').textContent=totalMins===0?'0분':(h>0?(h+'시간'+(m>0?' '+m+'분':'')):(m+'분'));
   document.getElementById('stat-hr-avg').textContent=hrAvgCnt>0?Math.round(hrAvgSum/hrAvgCnt):'—';
   document.getElementById('stat-hr-max').textContent=hrMaxCnt>0?Math.round(hrMaxSum/hrMaxCnt):'—';
 }
@@ -685,7 +676,7 @@ function fmtTime(timeObj){
   const total=['upper','lower','cardio'].reduce((s,c)=>{const t=timeObj[c]||{};return s+(t.h||0)*60+(t.m||0);},0);
   if(total===0) return null;
   const h=Math.floor(total/60),m=total%60;
-  return h>0?(h+'h'+(m>0?' '+m+'m':'')):(m+'m');
+  return h>0?(h+'시간'+(m>0?' '+m+'분':'')):(m+'분');
 }
 
 function openDrill(type){
@@ -703,7 +694,7 @@ function openDrill(type){
       let totalM=0;
       wEntries.forEach(({e})=>{if(e.time)['upper','lower','cardio'].forEach(cat=>{const t=e.time[cat]||{};totalM+=(t.h||0)*60+(t.m||0);});});
       const sh=Math.floor(totalM/60),sm=totalM%60;
-      html+=`<div class="drill-summary"><div class="drill-sum-item"><div class="drill-sum-val">${wEntries.length}</div><div class="drill-sum-lbl">운동 일수</div></div><div class="drill-sum-item"><div class="drill-sum-val">${totalM===0?'0m':(sh>0?sh+'h'+(sm?' '+sm+'m':''):(sm+'m'))}</div><div class="drill-sum-lbl">총 운동 시간</div></div></div>`;
+      html+=`<div class="drill-summary"><div class="drill-sum-item"><div class="drill-sum-val">${wEntries.length}</div><div class="drill-sum-lbl">운동 일수</div></div><div class="drill-sum-item"><div class="drill-sum-val">${totalM===0?'0분':(sh>0?sh+'시간'+(sm?' '+sm+'분':''):(sm+'분'))}</div><div class="drill-sum-lbl">총 운동 시간</div></div></div>`;
       html+=wEntries.map(({key,e})=>{
         const ex=e.exercises||{}, time=e.time||{};
         let cats=[];
@@ -714,8 +705,8 @@ function openDrill(type){
         const hr=e.watch&&e.watch.hrAvg?`<span class="drill-item-hr">❤️ ${e.watch.hrAvg}bpm</span>`:'';
         const exercises=[...(ex.upper||[]),...(ex.lower||[]),...(ex.cardio||[]),[e.customUpper,e.customLower,e.customCardio].filter(Boolean).join(' ')].filter(Boolean).join(', ');
         return `<div class="drill-item" onclick="selectDay(...'${key}'.split('-').map((v,i)=>i===1?parseInt(v)-1:parseInt(v)));closeDrill()">
-          <div class="drill-item-header"><span class="drill-item-date">${fmtDate(key)}</span><span class="drill-item-badge badge-workout">운동함</span></div>
-          <div class="drill-item-row">${cats.join('')}${timeStr?`<span class="drill-item-time">⏱ ${timeStr}</span>`:''}${hr}</div>
+          <div class="drill-item-header"><span class="drill-item-date">${fmtDate(key)}${timeStr?` <span class="drill-item-time">${timeStr}</span>`:''}</span><span class="drill-item-badge badge-workout">운동함</span></div>
+          <div class="drill-item-row">${cats.join('')}${hr}</div>
           ${exercises?`<div class="drill-item-body" style="margin-top:6px">${exercises}</div>`:''}
           ${e.memo?`<div class="drill-item-body" style="color:var(--text3);margin-top:4px">${e.memo}</div>`:''}
         </div>`;
@@ -748,7 +739,7 @@ function openDrill(type){
       tEntries.forEach(({e})=>['upper','lower','cardio'].forEach(cat=>{const t=(e.time||{})[cat]||{};totalM+=(t.h||0)*60+(t.m||0);}));
       const sh=Math.floor(totalM/60),sm=totalM%60;
       const avg=Math.round(totalM/tEntries.length);
-      html+=`<div class="drill-summary"><div class="drill-sum-item"><div class="drill-sum-val">${sh>0?sh+'h'+(sm?' '+sm+'m':''):(sm+'m')}</div><div class="drill-sum-lbl">총 운동 시간</div></div><div class="drill-sum-item"><div class="drill-sum-val">${avg>=60?Math.floor(avg/60)+'h '+(avg%60?avg%60+'m':''):(avg+'m')}</div><div class="drill-sum-lbl">평균 운동 시간</div></div></div>`;
+      html+=`<div class="drill-summary"><div class="drill-sum-item"><div class="drill-sum-val">${sh>0?sh+'시간'+(sm?' '+sm+'분':''):(sm+'분')}</div><div class="drill-sum-lbl">총 운동 시간</div></div><div class="drill-sum-item"><div class="drill-sum-val">${avg>=60?Math.floor(avg/60)+'시간 '+(avg%60?avg%60+'분':''):(avg+'분')}</div><div class="drill-sum-lbl">평균 운동 시간</div></div></div>`;
       html+=tEntries.map(({key,e})=>{
         const cats=[];
         const time=e.time||{};
@@ -756,7 +747,7 @@ function openDrill(type){
           const t=time[cat]||{}, mins=(t.h||0)*60+(t.m||0);
           if(mins>0){
             const lbl={upper:'💪 상체',lower:'🦵 하체',cardio:'🏃 유산소'}[cat];
-            const ts=mins>=60?Math.floor(mins/60)+'h'+(mins%60?' '+mins%60+'m':''):(mins+'m');
+            const ts=mins>=60?Math.floor(mins/60)+'시간'+(mins%60?' '+mins%60+'분':''):(mins+'분');
             cats.push(`${lbl} <span class="drill-item-time">${ts}</span>`);
           }
         });
@@ -783,22 +774,37 @@ function renderRecent(){
   const el=document.getElementById('recent-logs');
   const entries=Object.entries(db).filter(([k,v])=>v&&(v.workout!==undefined||v.meals)).sort((a,b)=>b[0].localeCompare(a[0])).slice(0,8);
   if(!entries.length){el.innerHTML=`<div class="empty-tip"><span class="emoji">📅</span><p>아직 기록이 없어요.<br>날짜를 탭해서 기록을 시작해보세요!</p></div>`;return;}
+  const dayNames=['일','월','화','수','목','금','토'];
   el.innerHTML=entries.map(([key,entry])=>{
     const[y,m,d]=key.split('-');
-    const mon=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'][parseInt(m)-1];
-    const ex=entry.exercises||{}, hasMeal=entry.meals&&(entry.meals.morning||entry.meals.noon||entry.meals.evening);
-    let tags='';
-    if(hasMeal) tags+='<span class="tag tag-meal">식단</span>';
+    const dateObj=new Date(parseInt(y),parseInt(m)-1,parseInt(d));
+    const dayName=dayNames[dateObj.getDay()];
+    const dateLabel=`${parseInt(m)}월 ${parseInt(d)}일 (${dayName})`;
+    const ex=entry.exercises||{};
+    const hasMeal=entry.meals&&(entry.meals.morning||entry.meals.noon||entry.meals.evening);
+    // 총 운동 시간 계산
+    const time=entry.time||{};
+    const totalMins=['upper','lower','cardio'].reduce((s,cat)=>{const t=time[cat]||{};return s+(t.h||0)*60+(t.m||0);},0);
+    const timeStr=totalMins>0?(()=>{const h=Math.floor(totalMins/60),m=totalMins%60;return h>0?(h+'시간'+(m>0?' '+m+'분':'')):(m+'분');})():'';
+    let chips='';
+    if(hasMeal) chips+='<span class="tag tag-meal">식단</span>';
     if(entry.workout){
-      if((ex.upper||[]).length||entry.customUpper) tags+='<span class="tag tag-upper">상체</span>';
-      if((ex.lower||[]).length||entry.customLower) tags+='<span class="tag tag-lower">하체</span>';
-      if((ex.cardio||[]).length||entry.customCardio) tags+='<span class="tag tag-cardio">유산소</span>';
-      if(!tags.includes('tag-upper')&&!tags.includes('tag-lower')&&!tags.includes('tag-cardio')) tags+='<span class="tag tag-upper">운동완료</span>';
+      if((ex.upper||[]).length||entry.customUpper) chips+='<span class="tag tag-upper">상체</span>';
+      if((ex.lower||[]).length||entry.customLower) chips+='<span class="tag tag-lower">하체</span>';
+      if((ex.cardio||[]).length||entry.customCardio) chips+='<span class="tag tag-cardio">유산소</span>';
+      if(!chips.includes('tag-upper')&&!chips.includes('tag-lower')&&!chips.includes('tag-cardio')&&!chips.includes('tag-meal')) chips+='<span class="tag tag-upper">운동완료</span>';
+    } else if(entry.workout===false){
+      chips+='<span class="tag" style="background:rgba(255,255,255,.06);color:var(--text3)">쉬는 날</span>';
     }
     const w=entry.watch||{};
-    if(w.hrAvg||w.hrMax||w.cal) tags+='<span class="tag tag-watch">⌚</span>';
-    const title=entry.workout?'운동함':(entry.workout===false?'쉬는 날':'기록있음');
-    return `<div class="log-item" onclick="selectDay(${y},${parseInt(m)-1},${parseInt(d)})"><div class="log-date"><span style="font-size:10px;color:var(--text3)">${mon}</span><span class="log-date-num">${d}</span></div><div class="log-info"><div class="log-title">${title}${entry.memo?' · '+entry.memo.slice(0,14)+(entry.memo.length>14?'…':''):''}</div><div class="log-tags">${tags}</div></div><div class="log-arrow">›</div></div>`;
+    if(w.hrAvg||w.hrMax||w.cal) chips+='<span class="tag tag-watch">⌚</span>';
+    return `<div class="log-item" onclick="selectDay(${y},${parseInt(m)-1},${parseInt(d)})">
+      <div class="log-info">
+        <div class="log-title">${dateLabel}${timeStr?` <span class="log-time">${timeStr}</span>`:''}</div>
+        <div class="log-tags">${chips}</div>
+      </div>
+      <div class="log-arrow">›</div>
+    </div>`;
   }).join('');
 }
 
@@ -975,8 +981,8 @@ function getRSValue(cat){
 }
 
 // ── TIME PICKERS (상체·하체·유산소) ──
-const H_ITEMS=[...Array(4)].map((_,i)=>i===0?'0h':i+'h');
-const M_ITEMS=['0m','5m','10m','15m','20m','25m','30m','35m','40m','45m','50m','55m'];
+const H_ITEMS=[...Array(4)].map((_,i)=>i+'시간');
+const M_ITEMS=['0분','5분','10분','15분','20분','25분','30분','35분','40분','45분','50분','55분'];
 
 function buildTimePickers(){
   ['upper','lower','cardio'].forEach(cat=>{
@@ -989,7 +995,7 @@ function updateTD(cat){
   const h=_drumState[`${cat}-h`]||0, m=_drumState[`${cat}-m`]||0;
   const el=document.getElementById('td-'+cat);
   if(!el)return;
-  el.textContent=(h===0&&m===0)?'—':`${h>0?h+'h ':''}${m>0?m*5+'m':''}`.trim();
+  el.textContent=(h===0&&m===0)?'—':`${h>0?h+'시간 ':''}${m>0?m*5+'분':''}`.trim();
 }
 
 function setTimeDrum(cat,h,m,anim){
