@@ -148,6 +148,11 @@ html,body{height:100%;width:100%;background:var(--bg);color:var(--text);font-fam
 .cat-icon{width:28px;height:28px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:14px;flex-shrink:0}
 .cat-icon-upper{background:rgba(108,99,255,.2)}.cat-icon-lower{background:rgba(251,191,36,.2)}.cat-icon-cardio{background:rgba(74,222,128,.2)}
 .cat-name{font-size:14px;font-weight:500;color:var(--text)}
+.cat-did-btn{margin-left:auto;padding:4px 12px;border-radius:20px;font-size:11px;font-weight:600;border:1px solid var(--border2);background:var(--surface);color:var(--text3);cursor:pointer;transition:all .2s;font-family:'Noto Sans KR',sans-serif;-webkit-user-select:none;user-select:none}
+.cat-did-btn.did{background:rgba(74,222,128,.18);border-color:var(--green);color:var(--green)}
+/* 미진행 상태: cat-header 아래 내용 흐리게 + 터치 불가 */
+.cat-block.inactive .exercise-chips,.cat-block.inactive .custom-input,.cat-block.inactive .rs-picker-wrap,.cat-block.inactive .time-row{opacity:.28;pointer-events:none;-webkit-user-select:none;user-select:none}
+.cat-block.inactive .custom-input{background:var(--surface);color:var(--text3)}
 
 /* CHIPS */
 .exercise-chips{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:10px}
@@ -355,10 +360,11 @@ html,body{height:100%;width:100%;background:var(--bg);color:var(--text);font-fam
         <div class="block-title">🏋️ 운동 종류 &amp; 시간</div>
 
         <!-- 상체 -->
-        <div class="cat-block">
+        <div class="cat-block" id="catblock-upper">
           <div class="cat-header">
             <div class="cat-icon cat-icon-upper">💪</div>
             <div class="cat-name">상체</div>
+            <button class="cat-did-btn" id="did-upper" onclick="toggleDidCat('upper')">미진행</button>
           </div>
           <div class="exercise-chips">
             <div class="ex-chip" data-cat="upper" onclick="toggleChip(this)">벤치프레스</div>
@@ -398,10 +404,11 @@ html,body{height:100%;width:100%;background:var(--bg);color:var(--text);font-fam
         </div>
 
         <!-- 하체 -->
-        <div class="cat-block">
+        <div class="cat-block" id="catblock-lower">
           <div class="cat-header">
             <div class="cat-icon cat-icon-lower">🦵</div>
             <div class="cat-name">하체</div>
+            <button class="cat-did-btn" id="did-lower" onclick="toggleDidCat('lower')">미진행</button>
           </div>
           <div class="exercise-chips">
             <div class="ex-chip" data-cat="lower" onclick="toggleChip(this)">스쿼트</div>
@@ -840,6 +847,12 @@ function openModal(y,m,d){
   document.getElementById('custom-lower').value=(isNew&&lastEntry?lastEntry.customLower:entry.customLower)||'';
   document.getElementById('custom-cardio').value=(isNew&&lastEntry?lastEntry.customCardio:entry.customCardio)||'';
 
+  // 상체·하체 했는지 체크
+  ['upper','lower'].forEach(cat=>{
+    const val = entry.didCat?.[cat] ?? (isNew && lastEntry ? (lastEntry.didCat?.[cat] ?? false) : false);
+    setDidCat(cat, val);
+  });
+
   // 횟수·세트 (이 날 기록 우선, 없으면 최근 기록)
   const rsBase = entry.repsSets || (lastEntry?.repsSets) || {};
   ['upper','lower'].forEach(cat=>{
@@ -871,6 +884,26 @@ function updateWorkoutToggle(){
   document.getElementById('wt-no').className='wt-btn'+(workoutDone===false?' active-no':'');
 }
 function toggleChip(el){const cls='sel-'+el.dataset.cat;el.classList.contains(cls)?(el.className='ex-chip'):(el.className='ex-chip',el.classList.add(cls));}
+
+// 상체·하체 진행 여부
+const didCat={upper:false,lower:false};
+function toggleDidCat(cat){
+  didCat[cat]=!didCat[cat];
+  _renderDidBtn(cat);
+}
+function setDidCat(cat,val){
+  didCat[cat]=!!val;
+  _renderDidBtn(cat);
+}
+function _renderDidBtn(cat){
+  const btn=document.getElementById('did-'+cat);
+  const block=document.getElementById('catblock-'+cat);
+  if(!btn||!block)return;
+  const active=didCat[cat];
+  btn.textContent=active?'✓ 진행':'미진행';
+  btn.classList.toggle('did',active);
+  block.classList.toggle('inactive',!active);
+}
 
 // DRUM PICKERS — generic engine
 const ITEM_H=36;
@@ -981,6 +1014,7 @@ function saveEntry(){
   db[selectedDate]={
     meals:{morning:document.getElementById('meal-morning').value.trim(),noon:document.getElementById('meal-noon').value.trim(),evening:document.getElementById('meal-evening').value.trim(),snack:document.getElementById('meal-snack').value.trim()},
     workout:workoutDone,
+    didCat:{upper:didCat.upper, lower:didCat.lower},
     exercises:{upper:getChips('upper'),lower:getChips('lower'),cardio:getChips('cardio')},
     customUpper:document.getElementById('custom-upper').value.trim(),
     customLower:document.getElementById('custom-lower').value.trim(),
@@ -1016,17 +1050,26 @@ function handleSettingsClick(e){if(e.target===document.getElementById('settings-
 function exportData(){
   const count=Object.keys(db).length;
   if(count===0){showSnack('⚠️ 내보낼 기록이 없어요');return;}
-  const payload=JSON.stringify({version:'workout_v3',exportedAt:new Date().toISOString(),count,data:db},null,2);
-  const blob=new Blob([payload],{type:'application/json'});
-  const url=URL.createObjectURL(blob);
-  const a=document.createElement('a');
   const d=new Date();
-  a.href=url;
-  a.download=`운동일지_백업_${d.getFullYear()}${String(d.getMonth()+1).padStart(2,'0')}${String(d.getDate()).padStart(2,'0')}.json`;
-  a.click();
-  URL.revokeObjectURL(url);
-  closeSettings();
-  showSnack(`✅ ${count}일 기록을 내보냈어요`);
+  const filename=`운동일지_백업_${d.getFullYear()}${String(d.getMonth()+1).padStart(2,'0')}${String(d.getDate()).padStart(2,'0')}.json`;
+  const payload=JSON.stringify({version:'workout_v3',exportedAt:d.toISOString(),count,data:db},null,2);
+  const blob=new Blob([payload],{type:'application/json'});
+  const file=new File([blob],filename,{type:'application/json'});
+
+  // PWA/홈 화면 모드에서는 Web Share API로 공유 시트 표시 (iCloud Drive 등으로 저장 가능)
+  if(navigator.share && navigator.canShare && navigator.canShare({files:[file]})){
+    navigator.share({files:[file],title:'운동일지 백업'})
+      .then(()=>{closeSettings();showSnack(`✅ ${count}일 기록을 공유했어요`);})
+      .catch(err=>{if(err.name!=='AbortError') showSnack('❌ 공유에 실패했어요');});
+  } else {
+    // 일반 브라우저 폴백: 다운로드
+    const url=URL.createObjectURL(blob);
+    const a=document.createElement('a');
+    a.href=url; a.download=filename; a.click();
+    URL.revokeObjectURL(url);
+    closeSettings();
+    showSnack(`✅ ${count}일 기록을 내보냈어요`);
+  }
 }
 
 let pendingImportData=null;
