@@ -869,6 +869,10 @@ function openModal(y,m,d){
   document.getElementById('memo').value=entry.memo||'';
   document.getElementById('modal').classList.add('open');
   document.body.style.overflow='hidden';
+  // 항상 상단부터 표시
+  requestAnimationFrame(()=>{
+    document.querySelector('#modal .sheet-body').scrollTop=0;
+  });
 }
 
 function closeModal(){document.getElementById('modal').classList.remove('open');document.body.style.overflow='';}
