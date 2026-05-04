@@ -632,6 +632,7 @@ function renderStats(){
     if(e.meals&&(e.meals.morning||e.meals.noon||e.meals.evening)) meals++;
     if(e.time){
       ['upper','lower','cardio'].forEach(cat=>{
+        if(cat!=='cardio' && !((e.didCat||{})[cat])) return;
         const t=e.time[cat]||{}; totalMins+=(t.h||0)*60+(t.m||0);
       });
     }
@@ -666,9 +667,13 @@ function fmtDate(key){
   return `${parseInt(m)}월 ${parseInt(d)}일 (${dn[new Date(parseInt(y),parseInt(m)-1,parseInt(d)).getDay()]})`;
 }
 
-function fmtTime(timeObj){
+function fmtTime(timeObj, entry){
   if(!timeObj) return null;
-  const total=['upper','lower','cardio'].reduce((s,c)=>{const t=timeObj[c]||{};return s+(t.h||0)*60+(t.m||0);},0);
+  const dc=(entry&&entry.didCat)||{};
+  const total=['upper','lower','cardio'].reduce((s,c)=>{
+    if(c!=='cardio'&&!dc[c]) return s;
+    const t=timeObj[c]||{}; return s+(t.h||0)*60+(t.m||0);
+  },0);
   if(total===0) return null;
   const h=Math.floor(total/60),m=total%60;
   return h>0?(h+'시간'+(m>0?' '+m+'분':'')):(m+'분');
@@ -696,7 +701,7 @@ function openDrill(type){
         if((ex.upper||[]).length||e.customUpper) cats.push(`<span class="tag tag-upper">상체</span>`);
         if((ex.lower||[]).length||e.customLower) cats.push(`<span class="tag tag-lower">하체</span>`);
         if((ex.cardio||[]).length||e.customCardio) cats.push(`<span class="tag tag-cardio">유산소</span>`);
-        const timeStr=fmtTime(time);
+        const timeStr=fmtTime(time,e);
         const hr=e.watch&&e.watch.hrAvg?`<span class="drill-item-hr">❤️ ${e.watch.hrAvg}bpm</span>`:'';
         const exercises=[...(ex.upper||[]),...(ex.lower||[]),...(ex.cardio||[]),[e.customUpper,e.customLower,e.customCardio].filter(Boolean).join(' ')].filter(Boolean).join(', ');
         return `<div class="drill-item" onclick="selectDay(...'${key}'.split('-').map((v,i)=>i===1?parseInt(v)-1:parseInt(v)));closeDrill()">
@@ -731,7 +736,10 @@ function openDrill(type){
     if(!tEntries.length){html='<div class="drill-empty">운동 시간 기록이 없어요</div>';}
     else{
       let totalM=0;
-      tEntries.forEach(({e})=>['upper','lower','cardio'].forEach(cat=>{const t=(e.time||{})[cat]||{};totalM+=(t.h||0)*60+(t.m||0);}));
+      tEntries.forEach(({e})=>['upper','lower','cardio'].forEach(cat=>{
+        if(cat!=='cardio'&&!((e.didCat||{})[cat])) return;
+        const t=(e.time||{})[cat]||{};totalM+=(t.h||0)*60+(t.m||0);
+      }));
       const sh=Math.floor(totalM/60),sm=totalM%60;
       const avg=Math.round(totalM/tEntries.length);
       html+=`<div class="drill-summary"><div class="drill-sum-item"><div class="drill-sum-val">${sh>0?sh+'시간'+(sm?' '+sm+'분':''):(sm+'분')}</div><div class="drill-sum-lbl">총 운동 시간</div></div><div class="drill-sum-item"><div class="drill-sum-val">${avg>=60?Math.floor(avg/60)+'시간 '+(avg%60?avg%60+'분':''):(avg+'분')}</div><div class="drill-sum-lbl">평균 운동 시간</div></div></div>`;
@@ -739,6 +747,7 @@ function openDrill(type){
         const cats=[];
         const time=e.time||{};
         ['upper','lower','cardio'].forEach(cat=>{
+          if(cat!=='cardio'&&!((e.didCat||{})[cat])) return;
           const t=time[cat]||{}, mins=(t.h||0)*60+(t.m||0);
           if(mins>0){
             const lbl={upper:'💪 상체',lower:'🦵 하체',cardio:'🏃 유산소'}[cat];
@@ -746,8 +755,11 @@ function openDrill(type){
             cats.push(`${lbl} <span class="drill-item-time">${ts}</span>`);
           }
         });
-        const totalDayM=['upper','lower','cardio'].reduce((s,cat)=>{const t=time[cat]||{};return s+(t.h||0)*60+(t.m||0);},0);
-        const tStr=fmtTime(time)||'';
+        const totalDayM=['upper','lower','cardio'].reduce((s,cat)=>{
+          if(cat!=='cardio'&&!((e.didCat||{})[cat])) return s;
+          const t=time[cat]||{};return s+(t.h||0)*60+(t.m||0);
+        },0);
+        const tStr=fmtTime(time,e)||'';
         return `<div class="drill-item" onclick="selectDay(...'${key}'.split('-').map((v,i)=>i===1?parseInt(v)-1:parseInt(v)));closeDrill()">
           <div class="drill-item-header"><span class="drill-item-date">${fmtDate(key)}</span><span class="drill-item-time">합계 ${tStr}</span></div>
           <div class="drill-item-body" style="margin-top:6px;display:flex;flex-direction:column;gap:3px">${cats.join('<br>')}</div>
@@ -779,7 +791,11 @@ function renderRecent(){
     const hasMeal=entry.meals&&(entry.meals.morning||entry.meals.noon||entry.meals.evening);
     // 총 운동 시간 계산
     const time=entry.time||{};
-    const totalMins=['upper','lower','cardio'].reduce((s,cat)=>{const t=time[cat]||{};return s+(t.h||0)*60+(t.m||0);},0);
+    const dc=entry.didCat||{};
+    const totalMins=['upper','lower','cardio'].reduce((s,cat)=>{
+      if(cat!=='cardio'&&!dc[cat]) return s;
+      const t=time[cat]||{};return s+(t.h||0)*60+(t.m||0);
+    },0);
     const timeStr=totalMins>0?(()=>{const h=Math.floor(totalMins/60),m=totalMins%60;return h>0?(h+'시간'+(m>0?' '+m+'분':'')):(m+'분');})():'';
     let chips='';
     if(hasMeal) chips+='<span class="tag tag-meal">식단</span>';
