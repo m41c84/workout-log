@@ -436,10 +436,11 @@ html,body{height:100%;width:100%;background:var(--bg);color:var(--text);font-fam
         </div>
 
         <!-- 유산소 -->
-        <div class="cat-block">
+        <div class="cat-block" id="catblock-cardio">
           <div class="cat-header">
             <div class="cat-icon cat-icon-cardio">🏃</div>
             <div class="cat-name">유산소</div>
+            <button class="cat-did-btn" id="did-cardio" onclick="toggleDidCat('cardio')">미진행</button>
           </div>
           <div class="exercise-chips">
             <div class="ex-chip" data-cat="cardio" onclick="toggleChip(this)">러닝</div>
@@ -467,8 +468,8 @@ html,body{height:100%;width:100%;background:var(--bg);color:var(--text);font-fam
       </div>
 
       <!-- 애플워치 -->
-      <div class="block">
-        <div class="block-title">⌚ 애플워치 기록</div>
+      <div class="block" id="catblock-watch">
+        <div class="block-title">⌚ 애플워치 기록 <button class="cat-did-btn" id="did-watch" onclick="toggleDidCat('watch')" style="font-size:10px;padding:3px 10px;margin-left:6px;vertical-align:middle">미진행</button></div>
 
         <div class="watch-metrics">
           <div class="metric-card">
@@ -632,7 +633,7 @@ function renderStats(){
     if(e.meals&&(e.meals.morning||e.meals.noon||e.meals.evening)) meals++;
     if(e.time){
       ['upper','lower','cardio'].forEach(cat=>{
-        if(cat!=='cardio' && !((e.didCat||{})[cat])) return;
+        if(!((e.didCat||{})[cat])) return;
         const t=e.time[cat]||{}; totalMins+=(t.h||0)*60+(t.m||0);
       });
     }
@@ -671,7 +672,7 @@ function fmtTime(timeObj, entry){
   if(!timeObj) return null;
   const dc=(entry&&entry.didCat)||{};
   const total=['upper','lower','cardio'].reduce((s,c)=>{
-    if(c!=='cardio'&&!dc[c]) return s;
+    if(!dc[c]) return s;
     const t=timeObj[c]||{}; return s+(t.h||0)*60+(t.m||0);
   },0);
   if(total===0) return null;
@@ -692,22 +693,34 @@ function openDrill(type){
     else{
       // summary
       let totalM=0;
-      wEntries.forEach(({e})=>{if(e.time)['upper','lower','cardio'].forEach(cat=>{const t=e.time[cat]||{};totalM+=(t.h||0)*60+(t.m||0);});});
+      wEntries.forEach(({e})=>{
+        if(!e.time) return;
+        const dc=e.didCat||{};
+        ['upper','lower','cardio'].forEach(cat=>{
+          if(!dc[cat]) return;
+          const t=e.time[cat]||{};totalM+=(t.h||0)*60+(t.m||0);
+        });
+      });
       const sh=Math.floor(totalM/60),sm=totalM%60;
       html+=`<div class="drill-summary"><div class="drill-sum-item"><div class="drill-sum-val">${wEntries.length}</div><div class="drill-sum-lbl">운동 일수</div></div><div class="drill-sum-item"><div class="drill-sum-val">${totalM===0?'0분':(sh>0?sh+'시간'+(sm?' '+sm+'분':''):(sm+'분'))}</div><div class="drill-sum-lbl">총 운동 시간</div></div></div>`;
       html+=wEntries.map(({key,e})=>{
-        const ex=e.exercises||{}, time=e.time||{};
+        const ex=e.exercises||{}, time=e.time||{}, dc=e.didCat||{};
         let cats=[];
-        if((ex.upper||[]).length||e.customUpper) cats.push(`<span class="tag tag-upper">상체</span>`);
-        if((ex.lower||[]).length||e.customLower) cats.push(`<span class="tag tag-lower">하체</span>`);
-        if((ex.cardio||[]).length||e.customCardio) cats.push(`<span class="tag tag-cardio">유산소</span>`);
+        if(dc.upper&&((ex.upper||[]).length||e.customUpper)) cats.push(`<span class="tag tag-upper">상체</span>`);
+        if(dc.lower&&((ex.lower||[]).length||e.customLower)) cats.push(`<span class="tag tag-lower">하체</span>`);
+        if(dc.cardio&&((ex.cardio||[]).length||e.customCardio)) cats.push(`<span class="tag tag-cardio">유산소</span>`);
         const timeStr=fmtTime(time,e);
-        const hr=e.watch&&e.watch.hrAvg?`<span class="drill-item-hr">❤️ ${e.watch.hrAvg}bpm</span>`:'';
-        const exercises=[...(ex.upper||[]),...(ex.lower||[]),...(ex.cardio||[]),[e.customUpper,e.customLower,e.customCardio].filter(Boolean).join(' ')].filter(Boolean).join(', ');
+        const hr=e.watch&&dc.watch&&e.watch.hrAvg?`<span class="drill-item-hr">❤️ ${e.watch.hrAvg}bpm</span>`:'';
+        const exList=[
+          ...(dc.upper?ex.upper||[]:[]),
+          ...(dc.lower?ex.lower||[]:[]),
+          ...(dc.cardio?ex.cardio||[]:[]),
+          [dc.upper?e.customUpper:'',dc.lower?e.customLower:'',dc.cardio?e.customCardio:''].filter(Boolean).join(' ')
+        ].filter(Boolean).join(', ');
         return `<div class="drill-item" onclick="selectDay(...'${key}'.split('-').map((v,i)=>i===1?parseInt(v)-1:parseInt(v)));closeDrill()">
           <div class="drill-item-header"><span class="drill-item-date">${fmtDate(key)}${timeStr?` <span class="drill-item-time">${timeStr}</span>`:''}</span><span class="drill-item-badge badge-workout">운동함</span></div>
           <div class="drill-item-row">${cats.join('')}${hr}</div>
-          ${exercises?`<div class="drill-item-body" style="margin-top:6px">${exercises}</div>`:''}
+          ${exList?`<div class="drill-item-body" style="margin-top:6px">${exList}</div>`:''}
           ${e.memo?`<div class="drill-item-body" style="color:var(--text3);margin-top:4px">${e.memo}</div>`:''}
         </div>`;
       }).join('');
@@ -730,24 +743,28 @@ function openDrill(type){
   } else if(type==='time'){
     title='⏱ 이번달 운동 시간';
     const tEntries=entries.filter(({e})=>{
-      if(!e.time) return false;
-      return ['upper','lower','cardio'].some(cat=>{const t=e.time[cat]||{};return (t.h||0)+(t.m||0)>0;});
+      if(e.workout!==true||!e.time) return false;
+      const dc=e.didCat||{};
+      return ['upper','lower','cardio'].some(cat=>{
+        if(!dc[cat]) return false;
+        const t=e.time[cat]||{};return (t.h||0)+(t.m||0)>0;
+      });
     });
     if(!tEntries.length){html='<div class="drill-empty">운동 시간 기록이 없어요</div>';}
     else{
       let totalM=0;
       tEntries.forEach(({e})=>['upper','lower','cardio'].forEach(cat=>{
-        if(cat!=='cardio'&&!((e.didCat||{})[cat])) return;
+        if(!((e.didCat||{})[cat])) return;
         const t=(e.time||{})[cat]||{};totalM+=(t.h||0)*60+(t.m||0);
       }));
       const sh=Math.floor(totalM/60),sm=totalM%60;
       const avg=Math.round(totalM/tEntries.length);
-      html+=`<div class="drill-summary"><div class="drill-sum-item"><div class="drill-sum-val">${sh>0?sh+'시간'+(sm?' '+sm+'분':''):(sm+'분')}</div><div class="drill-sum-lbl">총 운동 시간</div></div><div class="drill-sum-item"><div class="drill-sum-val">${avg>=60?Math.floor(avg/60)+'시간 '+(avg%60?avg%60+'분':''):(avg+'분')}</div><div class="drill-sum-lbl">평균 운동 시간</div></div></div>`;
+      html+=`<div class="drill-summary" style="grid-template-columns:1fr"><div class="drill-sum-item"><div class="drill-sum-val">${sh>0?sh+'시간'+(sm?' '+sm+'분':''):(sm+'분')}</div><div class="drill-sum-lbl">총 운동 시간</div></div></div>`;
       html+=tEntries.map(({key,e})=>{
         const cats=[];
         const time=e.time||{};
         ['upper','lower','cardio'].forEach(cat=>{
-          if(cat!=='cardio'&&!((e.didCat||{})[cat])) return;
+          if(!((e.didCat||{})[cat])) return;
           const t=time[cat]||{}, mins=(t.h||0)*60+(t.m||0);
           if(mins>0){
             const lbl={upper:'💪 상체',lower:'🦵 하체',cardio:'🏃 유산소'}[cat];
@@ -756,7 +773,7 @@ function openDrill(type){
           }
         });
         const totalDayM=['upper','lower','cardio'].reduce((s,cat)=>{
-          if(cat!=='cardio'&&!((e.didCat||{})[cat])) return s;
+          if(!((e.didCat||{})[cat])) return s;
           const t=time[cat]||{};return s+(t.h||0)*60+(t.m||0);
         },0);
         const tStr=fmtTime(time,e)||'';
@@ -789,26 +806,39 @@ function renderRecent(){
     const dateLabel=`${parseInt(m)}월 ${parseInt(d)}일 (${dayName})`;
     const ex=entry.exercises||{};
     const hasMeal=entry.meals&&(entry.meals.morning||entry.meals.noon||entry.meals.evening);
-    // 총 운동 시간 계산
     const time=entry.time||{};
-    const dc=entry.didCat||{};
+    const w=entry.watch||{};
+    // didCat 자동 판단 (openModal과 동일 로직)
+    const _dc = entry.didCat || {};
+    const dc = {};
+    ['upper','lower','cardio','watch'].forEach(cat=>{
+      if(entry.workout===false){
+        dc[cat] = false;
+      } else if(_dc[cat] !== undefined){
+        dc[cat] = _dc[cat];
+      } else {
+        // 구버전 데이터: 값 존재 여부로 판단
+        if(cat==='watch') dc[cat] = !!(w.hrAvg||w.hrMax||w.cal);
+        else if(cat==='cardio') dc[cat] = !!((ex.cardio||[]).length||entry.customCardio||(time.cardio?.h||0)+(time.cardio?.m||0)>0);
+        else dc[cat] = !!((ex[cat]||[]).length||entry[`custom${cat.charAt(0).toUpperCase()+cat.slice(1)}`]||(time[cat]?.h||0)+(time[cat]?.m||0)>0);
+      }
+    });
     const totalMins=['upper','lower','cardio'].reduce((s,cat)=>{
-      if(cat!=='cardio'&&!dc[cat]) return s;
+      if(!dc[cat]) return s;
       const t=time[cat]||{};return s+(t.h||0)*60+(t.m||0);
     },0);
     const timeStr=totalMins>0?(()=>{const h=Math.floor(totalMins/60),m=totalMins%60;return h>0?(h+'시간'+(m>0?' '+m+'분':'')):(m+'분');})():'';
     let chips='';
     if(hasMeal) chips+='<span class="tag tag-meal">식단</span>';
     if(entry.workout){
-      if((ex.upper||[]).length||entry.customUpper) chips+='<span class="tag tag-upper">상체</span>';
-      if((ex.lower||[]).length||entry.customLower) chips+='<span class="tag tag-lower">하체</span>';
-      if((ex.cardio||[]).length||entry.customCardio) chips+='<span class="tag tag-cardio">유산소</span>';
+      if(dc.upper&&((ex.upper||[]).length||entry.customUpper)) chips+='<span class="tag tag-upper">상체</span>';
+      if(dc.lower&&((ex.lower||[]).length||entry.customLower)) chips+='<span class="tag tag-lower">하체</span>';
+      if(dc.cardio&&((ex.cardio||[]).length||entry.customCardio)) chips+='<span class="tag tag-cardio">유산소</span>';
       if(!chips.includes('tag-upper')&&!chips.includes('tag-lower')&&!chips.includes('tag-cardio')&&!chips.includes('tag-meal')) chips+='<span class="tag tag-upper">운동완료</span>';
     } else if(entry.workout===false){
       chips+='<span class="tag" style="background:rgba(255,255,255,.06);color:var(--text3)">쉬는 날</span>';
     }
-    const w=entry.watch||{};
-    if(w.hrAvg||w.hrMax||w.cal) chips+='<span class="tag tag-watch">⌚</span>';
+    if(dc.watch&&(w.hrAvg||w.hrMax||w.cal)) chips+='<span class="tag tag-watch">⌚</span>';
     return `<div class="log-item" onclick="selectDay(${y},${parseInt(m)-1},${parseInt(d)})">
       <div class="log-info">
         <div class="log-title">${dateLabel}${timeStr?` <span class="log-time">${timeStr}</span>`:''}</div>
@@ -859,9 +889,25 @@ function openModal(y,m,d){
   document.getElementById('custom-lower').value=(isNew&&lastEntry?lastEntry.customLower:entry.customLower)||'';
   document.getElementById('custom-cardio').value=(isNew&&lastEntry?lastEntry.customCardio:entry.customCardio)||'';
 
-  // 상체·하체 했는지 체크
-  ['upper','lower'].forEach(cat=>{
-    const val = entry.didCat?.[cat] ?? (isNew && lastEntry ? (lastEntry.didCat?.[cat] ?? false) : false);
+  // 진행 여부 체크 (상체·하체·유산소·애플워치)
+  // 안했어요 선택 시 모두 미진행
+  ['upper','lower','cardio','watch'].forEach(cat=>{
+    let val;
+    if(entry.workout===false){
+      val = false;
+    } else if(entry.didCat?.[cat] !== undefined){
+      // 명시적으로 저장된 값 우선
+      val = entry.didCat[cat];
+    } else if(!isNew){
+      // 이 날 기록은 있는데 didCat이 없는 경우(구버전 데이터) → 값 존재 여부로 판단
+      const ex=entry.exercises||{}, time=entry.time||{}, w=entry.watch||{};
+      if(cat==='watch') val = !!(w.hrAvg||w.hrMax||w.cal);
+      else if(cat==='cardio') val = !!((ex.cardio||[]).length||entry.customCardio||(time.cardio?.h||0)+(time.cardio?.m||0)>0);
+      else val = !!((ex[cat]||[]).length||entry[`custom${cat.charAt(0).toUpperCase()+cat.slice(1)}`]||(time[cat]?.h||0)+(time[cat]?.m||0)>0);
+    } else {
+      // 새 날짜 → 최근 기록 기본값
+      val = lastEntry ? (lastEntry.didCat?.[cat] ?? false) : false;
+    }
     setDidCat(cat, val);
   });
 
@@ -894,15 +940,21 @@ function openModal(y,m,d){
 
 function closeModal(){document.getElementById('modal').classList.remove('open');document.body.style.overflow='';}
 function handleOverlayClick(e){if(e.target===document.getElementById('modal'))closeModal();}
-function setWorkout(v){workoutDone=v;updateWorkoutToggle();}
+function setWorkout(v){
+  workoutDone=v;
+  updateWorkoutToggle();
+  if(v===false){
+    ['upper','lower','cardio','watch'].forEach(cat=>setDidCat(cat,false));
+  }
+}
 function updateWorkoutToggle(){
   document.getElementById('wt-yes').className='wt-btn'+(workoutDone===true?' active':'');
   document.getElementById('wt-no').className='wt-btn'+(workoutDone===false?' active-no':'');
 }
 function toggleChip(el){const cls='sel-'+el.dataset.cat;el.classList.contains(cls)?(el.className='ex-chip'):(el.className='ex-chip',el.classList.add(cls));}
 
-// 상체·하체 진행 여부
-const didCat={upper:false,lower:false};
+// 상체·하체·유산소·애플워치 진행 여부
+const didCat={upper:false,lower:false,cardio:false,watch:false};
 function toggleDidCat(cat){
   didCat[cat]=!didCat[cat];
   _renderDidBtn(cat);
@@ -918,7 +970,15 @@ function _renderDidBtn(cat){
   const active=didCat[cat];
   btn.textContent=active?'✓ 진행':'미진행';
   btn.classList.toggle('did',active);
-  block.classList.toggle('inactive',!active);
+  // watch는 block 전체, 나머지는 cat-header 아래만 비활성
+  if(cat==='watch'){
+    block.querySelectorAll('.watch-metrics').forEach(el=>{
+      el.style.opacity=active?'':'0.28';
+      el.style.pointerEvents=active?'':'none';
+    });
+  } else {
+    block.classList.toggle('inactive',!active);
+  }
 }
 
 // DRUM PICKERS — generic engine
@@ -1030,7 +1090,7 @@ function saveEntry(){
   db[selectedDate]={
     meals:{morning:document.getElementById('meal-morning').value.trim(),noon:document.getElementById('meal-noon').value.trim(),evening:document.getElementById('meal-evening').value.trim(),snack:document.getElementById('meal-snack').value.trim()},
     workout:workoutDone,
-    didCat:{upper:didCat.upper, lower:didCat.lower},
+    didCat:{upper:didCat.upper, lower:didCat.lower, cardio:didCat.cardio, watch:didCat.watch},
     exercises:{upper:getChips('upper'),lower:getChips('lower'),cardio:getChips('cardio')},
     customUpper:document.getElementById('custom-upper').value.trim(),
     customLower:document.getElementById('custom-lower').value.trim(),
