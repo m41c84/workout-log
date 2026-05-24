@@ -63,7 +63,7 @@ html,body{height:100%;width:100%;background:var(--bg);color:var(--text);font-fam
 .stats-section{padding:12px 16px;border-bottom:1px solid var(--border);display:flex;flex-direction:column;gap:8px}
 .stats-row3{display:flex;gap:8px}
 .stats-row2{display:flex;gap:8px}
-.stat-chip{flex:1;background:var(--surface);border-radius:var(--radius-sm);border:1px solid var(--border);padding:10px 8px;text-align:center;transition:background .15s,transform .1s;display:flex;flex-direction:column;align-items:center;justify-content:center}
+.stat-chip{flex:1;background:var(--surface);border-radius:var(--radius-sm);border:1px solid var(--border);padding:10px 8px;text-align:center;transition:background .15s,transform .1s}
 .stat-chip.tappable{cursor:pointer;border-color:var(--border2)}
 .stat-chip.tappable:active{background:var(--surface2);transform:scale(.97)}
 .stat-val{font-size:20px;font-weight:700;color:var(--accent2);font-family:'DM Mono',monospace}
@@ -182,10 +182,28 @@ html,body{height:100%;width:100%;background:var(--bg);color:var(--text);font-fam
 .drum-divider{width:1px;background:var(--border);margin:10px 0;flex-shrink:0}
 .time-display{font-size:12px;color:var(--accent2);font-family:'DM Mono',monospace;font-weight:500;background:var(--surface2);padding:5px 10px;border-radius:6px;white-space:nowrap;min-width:52px;text-align:center;flex-shrink:0}
 
-/* REPS / SETS PICKER */
-.rs-picker-wrap{display:flex;align-items:center;gap:6px;margin-top:2px}
-.rs-col-label{font-size:11px;color:var(--text3);font-weight:500;white-space:nowrap;flex-shrink:0}
-.rs-display{font-size:12px;color:var(--accent2);font-family:'DM Mono',monospace;font-weight:500;background:var(--surface2);padding:5px 10px;border-radius:6px;white-space:nowrap;min-width:64px;text-align:center;flex-shrink:0}
+/* EXERCISE CARDS */
+.ex-cards{display:flex;flex-direction:column;gap:10px;margin:10px 0 4px}
+.ex-card{background:var(--surface2);border-radius:var(--radius-sm);border:1px solid var(--border2);padding:12px 12px 10px}
+.ex-card-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px}
+.ex-card-name{font-size:13px;font-weight:600;color:var(--text)}
+.ex-card-del{background:none;border:none;color:var(--text3);font-size:20px;cursor:pointer;line-height:1;padding:0 2px}
+.ex-card-sep{font-size:16px;color:var(--border2);padding-top:14px;flex-shrink:0}
+.ex-card-lbl{font-size:10px;color:var(--text3);font-weight:500;text-align:center;margin-bottom:4px}
+.ex-sel-row{display:flex;align-items:flex-end;gap:4px}
+.ex-sel-col{display:flex;flex-direction:column;align-items:center;flex:1}
+.ex-sel{
+  width:100%;padding:8px 2px;
+  background:var(--surface);border:1px solid var(--border2);border-radius:8px;
+  color:var(--text);font-family:'Noto Sans KR',sans-serif;font-size:13px;font-weight:500;
+  text-align:center;text-align-last:center;
+  -webkit-appearance:none;appearance:none;outline:none;cursor:pointer;
+}
+.ex-sel:focus{border-color:var(--accent)}
+
+.custom-ex-row{display:flex;gap:8px;align-items:center;margin-top:8px}
+.custom-ex-add{width:36px;height:36px;border-radius:50%;background:var(--accent);border:none;color:#fff;font-size:20px;cursor:pointer;flex-shrink:0;display:flex;align-items:center;justify-content:center;transition:opacity .15s}
+.custom-ex-add:active{opacity:.8}
 
 /* APPLE WATCH */
 .watch-hint{font-size:11px;color:var(--text3);margin-bottom:12px;line-height:1.7;background:rgba(96,165,250,.08);border:1px solid rgba(96,165,250,.15);border-radius:var(--radius-sm);padding:10px 12px}
@@ -272,14 +290,13 @@ html,body{height:100%;width:100%;background:var(--bg);color:var(--text);font-fam
     </div>
     <!-- STATS GRID -->
     <div class="stats-section">
-      <!-- Row 1: tappable 3 chips -->
       <div class="stats-row3">
-        <div class="stat-chip tappable" onclick="openDrill('workout')">
+        <div class="stat-chip tappable" onclick="openDrill('workout')" style="text-align:center">
           <div class="stat-val" id="stat-workout">0</div>
           <div class="stat-lbl">이번달 운동</div>
         </div>
-<div class="stat-chip tappable" onclick="openDrill('time')">
-          <div class="stat-val" id="stat-time">0h</div>
+        <div class="stat-chip tappable" onclick="openDrill('time')" style="text-align:center">
+          <div class="stat-val" id="stat-time">0분</div>
           <div class="stat-lbl">총 운동 시간</div>
         </div>
       </div>
@@ -332,40 +349,21 @@ html,body{height:100%;width:100%;background:var(--bg);color:var(--text);font-fam
             <div class="cat-name">상체</div>
             <button class="cat-did-btn" id="did-upper" onclick="toggleDidCat('upper')">미진행</button>
           </div>
-          <div class="exercise-chips">
-            <div class="ex-chip" data-cat="upper" onclick="toggleChip(this)">벤치프레스</div>
-            <div class="ex-chip" data-cat="upper" onclick="toggleChip(this)">덤벨컬</div>
-            <div class="ex-chip" data-cat="upper" onclick="toggleChip(this)">숄더프레스</div>
-            <div class="ex-chip" data-cat="upper" onclick="toggleChip(this)">풀업</div>
-            <div class="ex-chip" data-cat="upper" onclick="toggleChip(this)">체스트플라이</div>
-            <div class="ex-chip" data-cat="upper" onclick="toggleChip(this)">래트풀다운</div>
-            <div class="ex-chip" data-cat="upper" onclick="toggleChip(this)">트라이셉스</div>
-            <div class="ex-chip" data-cat="upper" onclick="toggleChip(this)">딥스</div>
-            <div class="ex-chip" data-cat="upper" onclick="toggleChip(this)">로우</div>
+          <div class="exercise-chips" id="chips-upper">
+            <div class="ex-chip" data-cat="upper" data-name="벤치프레스" onclick="toggleChip(this)">벤치프레스</div>
+            <div class="ex-chip" data-cat="upper" data-name="덤벨컬" onclick="toggleChip(this)">덤벨컬</div>
+            <div class="ex-chip" data-cat="upper" data-name="숄더프레스" onclick="toggleChip(this)">숄더프레스</div>
+            <div class="ex-chip" data-cat="upper" data-name="풀업" onclick="toggleChip(this)">풀업</div>
+            <div class="ex-chip" data-cat="upper" data-name="체스트플라이" onclick="toggleChip(this)">체스트플라이</div>
+            <div class="ex-chip" data-cat="upper" data-name="래트풀다운" onclick="toggleChip(this)">래트풀다운</div>
+            <div class="ex-chip" data-cat="upper" data-name="트라이셉스" onclick="toggleChip(this)">트라이셉스</div>
+            <div class="ex-chip" data-cat="upper" data-name="딥스" onclick="toggleChip(this)">딥스</div>
+            <div class="ex-chip" data-cat="upper" data-name="로우" onclick="toggleChip(this)">로우</div>
           </div>
-          <input class="custom-input" id="custom-upper" placeholder="기타 상체 운동 직접 입력…">
-          <div class="rs-picker-wrap">
-            <div class="rs-col-label">횟수</div>
-            <div class="drum-picker" id="dp-upper-reps">
-              <div class="drum-sel"></div>
-              <div class="drum-col" id="dc-upper-reps"><div class="drum-list" id="dl-upper-reps"></div></div>
-            </div>
-            <div class="rs-col-label">세트</div>
-            <div class="drum-picker" id="dp-upper-sets">
-              <div class="drum-sel"></div>
-              <div class="drum-col" id="dc-upper-sets"><div class="drum-list" id="dl-upper-sets"></div></div>
-            </div>
-            <div class="rs-display" id="rd-upper">—</div>
-          </div>
-          <div class="time-row" style="margin-top:8px">
-            <span class="time-row-label">운동 시간</span>
-            <div class="drum-picker" id="dp-upper-time">
-              <div class="drum-sel"></div>
-              <div class="drum-col" id="dc-upper-h"><div class="drum-list" id="dl-upper-h"></div></div>
-              <div class="drum-divider"></div>
-              <div class="drum-col" id="dc-upper-m"><div class="drum-list" id="dl-upper-m"></div></div>
-            </div>
-            <div class="time-display" id="td-upper">—</div>
+          <div class="ex-cards" id="ex-cards-upper"></div>
+          <div class="custom-ex-row">
+            <input class="custom-input" id="custom-upper" placeholder="기타 상체 운동 직접 입력…" style="margin-bottom:0">
+            <button class="custom-ex-add" onclick="addCustomEx('upper')">+</button>
           </div>
         </div>
 
@@ -376,40 +374,21 @@ html,body{height:100%;width:100%;background:var(--bg);color:var(--text);font-fam
             <div class="cat-name">하체</div>
             <button class="cat-did-btn" id="did-lower" onclick="toggleDidCat('lower')">미진행</button>
           </div>
-          <div class="exercise-chips">
-            <div class="ex-chip" data-cat="lower" onclick="toggleChip(this)">스쿼트</div>
-            <div class="ex-chip" data-cat="lower" onclick="toggleChip(this)">레그프레스</div>
-            <div class="ex-chip" data-cat="lower" onclick="toggleChip(this)">런지</div>
-            <div class="ex-chip" data-cat="lower" onclick="toggleChip(this)">레그컬</div>
-            <div class="ex-chip" data-cat="lower" onclick="toggleChip(this)">레그익스텐션</div>
-            <div class="ex-chip" data-cat="lower" onclick="toggleChip(this)">카프레이즈</div>
-            <div class="ex-chip" data-cat="lower" onclick="toggleChip(this)">데드리프트</div>
-            <div class="ex-chip" data-cat="lower" onclick="toggleChip(this)">힙쓰러스트</div>
-            <div class="ex-chip" data-cat="lower" onclick="toggleChip(this)">불가리안스쿼트</div>
+          <div class="exercise-chips" id="chips-lower">
+            <div class="ex-chip" data-cat="lower" data-name="스쿼트" onclick="toggleChip(this)">스쿼트</div>
+            <div class="ex-chip" data-cat="lower" data-name="레그프레스" onclick="toggleChip(this)">레그프레스</div>
+            <div class="ex-chip" data-cat="lower" data-name="런지" onclick="toggleChip(this)">런지</div>
+            <div class="ex-chip" data-cat="lower" data-name="레그컬" onclick="toggleChip(this)">레그컬</div>
+            <div class="ex-chip" data-cat="lower" data-name="레그익스텐션" onclick="toggleChip(this)">레그익스텐션</div>
+            <div class="ex-chip" data-cat="lower" data-name="카프레이즈" onclick="toggleChip(this)">카프레이즈</div>
+            <div class="ex-chip" data-cat="lower" data-name="데드리프트" onclick="toggleChip(this)">데드리프트</div>
+            <div class="ex-chip" data-cat="lower" data-name="힙쓰러스트" onclick="toggleChip(this)">힙쓰러스트</div>
+            <div class="ex-chip" data-cat="lower" data-name="불가리안스쿼트" onclick="toggleChip(this)">불가리안스쿼트</div>
           </div>
-          <input class="custom-input" id="custom-lower" placeholder="기타 하체 운동 직접 입력…">
-          <div class="rs-picker-wrap">
-            <div class="rs-col-label">횟수</div>
-            <div class="drum-picker" id="dp-lower-reps">
-              <div class="drum-sel"></div>
-              <div class="drum-col" id="dc-lower-reps"><div class="drum-list" id="dl-lower-reps"></div></div>
-            </div>
-            <div class="rs-col-label">세트</div>
-            <div class="drum-picker" id="dp-lower-sets">
-              <div class="drum-sel"></div>
-              <div class="drum-col" id="dc-lower-sets"><div class="drum-list" id="dl-lower-sets"></div></div>
-            </div>
-            <div class="rs-display" id="rd-lower">—</div>
-          </div>
-          <div class="time-row" style="margin-top:8px">
-            <span class="time-row-label">운동 시간</span>
-            <div class="drum-picker" id="dp-lower-time">
-              <div class="drum-sel"></div>
-              <div class="drum-col" id="dc-lower-h"><div class="drum-list" id="dl-lower-h"></div></div>
-              <div class="drum-divider"></div>
-              <div class="drum-col" id="dc-lower-m"><div class="drum-list" id="dl-lower-m"></div></div>
-            </div>
-            <div class="time-display" id="td-lower">—</div>
+          <div class="ex-cards" id="ex-cards-lower"></div>
+          <div class="custom-ex-row">
+            <input class="custom-input" id="custom-lower" placeholder="기타 하체 운동 직접 입력…" style="margin-bottom:0">
+            <button class="custom-ex-add" onclick="addCustomEx('lower')">+</button>
           </div>
         </div>
 
@@ -447,7 +426,7 @@ html,body{height:100%;width:100%;background:var(--bg);color:var(--text);font-fam
 
       <!-- 애플워치 -->
       <div class="block" id="catblock-watch">
-        <div class="block-title">❤️ 심박수 기록 <button class="cat-did-btn" id="did-watch" onclick="toggleDidCat('watch')" style="font-size:10px;padding:3px 10px;margin-left:6px;vertical-align:middle">미진행</button></div>
+        <div class="block-title">⌚ 애플워치 기록 <button class="cat-did-btn" id="did-watch" onclick="toggleDidCat('watch')" style="font-size:10px;padding:3px 10px;margin-left:6px;vertical-align:middle">미진행</button></div>
 
         <div class="watch-metrics">
           <div class="metric-card">
@@ -584,6 +563,7 @@ function renderCalendar(){
   for(let d=1;d<=days;d++){
     const key=dateKey(curYear,curMonth,d), e=db[key]||{};
     const isToday=key===todayStr(), isSel=selectedDate===key;
+    const hasMeal=e.meals&&(e.meals.morning||e.meals.noon||e.meals.evening||e.meals.snack);
     let cls='day-cell'+(isToday?' today':'')+(isSel?' selected':'');
     let dots='';
     if(e.workout===true) dots+='<div class="dot dot-workout"></div>';
@@ -672,22 +652,36 @@ function openDrill(type){
       html+=wEntries.map(({key,e})=>{
         const ex=e.exercises||{}, time=e.time||{}, dc=e.didCat||{};
         let cats=[];
-        if(dc.upper&&((ex.upper||[]).length||e.customUpper)) cats.push(`<span class="tag tag-upper">상체</span>`);
-        if(dc.lower&&((ex.lower||[]).length||e.customLower)) cats.push(`<span class="tag tag-lower">하체</span>`);
+        if(dc.upper&&e.exDetail?.upper&&Object.keys(e.exDetail.upper).length) cats.push(`<span class="tag tag-upper">상체</span>`);
+        if(dc.lower&&e.exDetail?.lower&&Object.keys(e.exDetail.lower).length) cats.push(`<span class="tag tag-lower">하체</span>`);
         if(dc.cardio&&((ex.cardio||[]).length||e.customCardio)) cats.push(`<span class="tag tag-cardio">유산소</span>`);
         const timeStr=fmtTime(time,e);
         const hr=e.watch&&dc.watch&&e.watch.hrAvg?`<span class="drill-item-hr">❤️ ${e.watch.hrAvg}bpm</span>`:'';
-        const exList=[
-          ...(dc.upper?ex.upper||[]:[]),
-          ...(dc.lower?ex.lower||[]:[]),
-          ...(dc.cardio?ex.cardio||[]:[]),
-          [dc.upper?e.customUpper:'',dc.lower?e.customLower:'',dc.cardio?e.customCardio:''].filter(Boolean).join(' ')
-        ].filter(Boolean).join(', ');
+        // 운동 목록
+        const upperList=dc.upper&&e.exDetail?.upper?Object.keys(e.exDetail.upper):[];
+        const lowerList=dc.lower&&e.exDetail?.lower?Object.keys(e.exDetail.lower):[];
+        const cardioList=dc.cardio?(ex.cardio||[]):[];
+        const exList=[...upperList,...lowerList,...cardioList,dc.cardio?e.customCardio:''].filter(Boolean).join(', ');
         return `<div class="drill-item" onclick="selectDay(...'${key}'.split('-').map((v,i)=>i===1?parseInt(v)-1:parseInt(v)));closeDrill()">
           <div class="drill-item-header"><span class="drill-item-date">${fmtDate(key)}${timeStr?` <span class="drill-item-time">${timeStr}</span>`:''}</span><span class="drill-item-badge badge-workout">운동함</span></div>
           <div class="drill-item-row">${cats.join('')}${hr}</div>
           ${exList?`<div class="drill-item-body" style="margin-top:6px">${exList}</div>`:''}
           ${e.memo?`<div class="drill-item-body" style="color:var(--text3);margin-top:4px">${e.memo}</div>`:''}
+        </div>`;
+      }).join('');
+    }
+  } else if(type==='meal'){
+    title='🍽️ 이번달 식단 기록';
+    const mEntries=entries.filter(({e})=>e.meals&&(e.meals.morning||e.meals.noon||e.meals.evening||e.meals.snack));
+    if(!mEntries.length){html='<div class="drill-empty">이번달 식단 기록이 없어요</div>';}
+    else{
+      html+=`<div class="drill-summary"><div class="drill-sum-item"><div class="drill-sum-val">${mEntries.length}</div><div class="drill-sum-lbl">기록 일수</div></div><div class="drill-sum-item"><div class="drill-sum-val">${Math.round(mEntries.length/new Date(curYear,curMonth+1,0).getDate()*100)}%</div><div class="drill-sum-lbl">이번달 달성률</div></div></div>`;
+      html+=mEntries.map(({key,e})=>{
+        const m=e.meals||{};
+        const rows=[['아침',m.morning],['점심',m.noon],['저녁',m.evening],['간식',m.snack]].filter(([,v])=>v);
+        return `<div class="drill-item" onclick="selectDay(...'${key}'.split('-').map((v,i)=>i===1?parseInt(v)-1:parseInt(v)));closeDrill()">
+          <div class="drill-item-header"><span class="drill-item-date">${fmtDate(key)}</span></div>
+          <div class="drill-meal-grid">${rows.map(([slot,val])=>`<span class="drill-meal-slot">${slot}</span><span class="drill-meal-val">${val}</span>`).join('')}</div>
         </div>`;
       }).join('');
     }
@@ -782,8 +776,8 @@ function renderRecent(){
     let chips='';
     if(hasMeal) chips+='<span class="tag tag-meal">식단</span>';
     if(entry.workout){
-      if(dc.upper&&((ex.upper||[]).length||entry.customUpper)) chips+='<span class="tag tag-upper">상체</span>';
-      if(dc.lower&&((ex.lower||[]).length||entry.customLower)) chips+='<span class="tag tag-lower">하체</span>';
+      if(dc.upper&&entry.exDetail?.upper&&Object.keys(entry.exDetail.upper).length) chips+='<span class="tag tag-upper">상체</span>';
+      if(dc.lower&&entry.exDetail?.lower&&Object.keys(entry.exDetail.lower).length) chips+='<span class="tag tag-lower">하체</span>';
       if(dc.cardio&&((ex.cardio||[]).length||entry.customCardio)) chips+='<span class="tag tag-cardio">유산소</span>';
       if(!chips.includes('tag-upper')&&!chips.includes('tag-lower')&&!chips.includes('tag-cardio')&&!chips.includes('tag-meal')) chips+='<span class="tag tag-upper">운동완료</span>';
     } else if(entry.workout===false){
@@ -829,15 +823,20 @@ function openModal(y,m,d){
   workoutDone=entry.workout??null;
   updateWorkoutToggle();
 
-  // 운동 칩
-  const src = isNew && lastEntry ? lastEntry : entry;
-  const ex=(src.exercises)||{};
-  document.querySelectorAll('.ex-chip').forEach(chip=>{
-    const cat=chip.dataset.cat; chip.className='ex-chip';
-    if((ex[cat]||[]).includes(chip.textContent)) chip.classList.add('sel-'+cat);
+  // 운동 칩 & 카드 (상체·하체)
+  ['upper','lower'].forEach(cat=>{
+    document.querySelectorAll(`.ex-chip[data-cat="${cat}"]`).forEach(c=>c.className='ex-chip');
+    const saved = entry.exDetail?.[cat] || (isNew && lastEntry?.exDetail?.[cat]) || null;
+    loadExData(cat, saved);
   });
-  document.getElementById('custom-upper').value=(isNew&&lastEntry?lastEntry.customUpper:entry.customUpper)||'';
-  document.getElementById('custom-lower').value=(isNew&&lastEntry?lastEntry.customLower:entry.customLower)||'';
+  // 유산소 칩 (기존 방식)
+  const exCardio = entry.exercises?.cardio || (isNew && lastEntry?.exercises?.cardio) || [];
+  document.querySelectorAll('.ex-chip[data-cat="cardio"]').forEach(chip=>{
+    chip.className='ex-chip';
+    if(exCardio.includes(chip.textContent)) chip.classList.add('sel-cardio');
+  });
+  document.getElementById('custom-upper').value='';
+  document.getElementById('custom-lower').value='';
   document.getElementById('custom-cardio').value=(isNew&&lastEntry?lastEntry.customCardio:entry.customCardio)||'';
 
   // 진행 여부 체크 (상체·하체·유산소·애플워치)
@@ -847,33 +846,22 @@ function openModal(y,m,d){
     if(entry.workout===false){
       val = false;
     } else if(entry.didCat?.[cat] !== undefined){
-      // 명시적으로 저장된 값 우선
       val = entry.didCat[cat];
     } else if(!isNew){
-      // 이 날 기록은 있는데 didCat이 없는 경우(구버전 데이터) → 값 존재 여부로 판단
-      const ex=entry.exercises||{}, time=entry.time||{}, w=entry.watch||{};
-      if(cat==='watch') val = !!(w.hrAvg||w.hrMax||w.cal);
-      else if(cat==='cardio') val = !!((ex.cardio||[]).length||entry.customCardio||(time.cardio?.h||0)+(time.cardio?.m||0)>0);
-      else val = !!((ex[cat]||[]).length||entry[`custom${cat.charAt(0).toUpperCase()+cat.slice(1)}`]||(time[cat]?.h||0)+(time[cat]?.m||0)>0);
+      const ex2=entry.exercises||{}, time=entry.time||{}, w2=entry.watch||{};
+      if(cat==='watch') val = !!(w2.hrAvg||w2.hrMax||w2.cal);
+      else if(cat==='cardio') val = !!((ex2.cardio||[]).length||entry.customCardio||(time.cardio?.h||0)+(time.cardio?.m||0)>0);
+      else val = !!(entry.exDetail?.[cat] && Object.keys(entry.exDetail[cat]).length);
     } else {
-      // 새 날짜 → 최근 기록 기본값
       val = lastEntry ? (lastEntry.didCat?.[cat] ?? false) : false;
     }
     setDidCat(cat, val);
   });
 
-  // 횟수·세트 (이 날 기록 우선, 없으면 최근 기록)
-  const rsBase = entry.repsSets || (lastEntry?.repsSets) || {};
-  ['upper','lower'].forEach(cat=>{
-    setRSPicker(cat, rsBase[cat]?.reps||'—', rsBase[cat]?.sets||'—', false);
-  });
-
-  // 운동 시간 (이 날 기록 우선, 없으면 최근 기록)
+  // 유산소·상체·하체 시간 (유산소만 별도 드럼, 상체·하체는 카드에 포함)
   const timeBase = entry.time || (lastEntry?.time) || {};
-  ['upper','lower','cardio'].forEach(cat=>{
-    const t=timeBase[cat]||{h:0,m:0};
-    setTimeDrum(cat, t.h||0, t.m||0, false);
-  });
+  const ct=timeBase.cardio||{h:0,m:0};
+  setTimeDrum('cardio', ct.h||0, ct.m||0, false);
 
   // 애플워치
   const w=entry.watch||{};
@@ -902,7 +890,119 @@ function updateWorkoutToggle(){
   document.getElementById('wt-yes').className='wt-btn'+(workoutDone===true?' active':'');
   document.getElementById('wt-no').className='wt-btn'+(workoutDone===false?' active-no':'');
 }
-function toggleChip(el){const cls='sel-'+el.dataset.cat;el.classList.contains(cls)?(el.className='ex-chip'):(el.className='ex-chip',el.classList.add(cls));}
+// ── EX CARD SYSTEM ──
+const exData = {upper:{}, lower:{}};
+
+function _exKey(name){ return encodeURIComponent(name).replace(/%/g,'_'); }
+
+function toggleChip(el){
+  const cat=el.dataset.cat;
+  if(!['upper','lower'].includes(cat)){
+    const cls='sel-'+cat;
+    el.classList.contains(cls)?(el.className='ex-chip'):(el.className='ex-chip',el.classList.add(cls));
+    return;
+  }
+  const name=el.dataset.name||el.textContent;
+  const cls='sel-'+cat;
+  if(el.classList.contains(cls)){
+    el.className='ex-chip';
+    delete exData[cat][name];
+    renderExCards(cat);
+  } else {
+    el.className='ex-chip'; el.classList.add(cls);
+    if(!exData[cat][name]) exData[cat][name]={reps:0,sets:0,h:0,m:0};
+    renderExCards(cat);
+  }
+}
+
+function addCustomEx(cat){
+  const inp=document.getElementById('custom-'+cat);
+  const name=inp.value.trim();
+  if(!name){showSnack('운동 이름을 입력해주세요');return;}
+  if(exData[cat][name]){showSnack('이미 추가된 운동이에요');return;}
+  exData[cat][name]={reps:0,sets:0,h:0,m:0,custom:true};
+  inp.value='';
+  renderExCards(cat);
+}
+
+function removeExCard(cat,name){
+  delete exData[cat][name];
+  const chip=document.querySelector(`.ex-chip[data-cat="${cat}"][data-name="${CSS.escape(name)}"]`);
+  if(chip) chip.className='ex-chip';
+  renderExCards(cat);
+}
+
+function _makeOpts(items, val){
+  return items.map((v,i)=>`<option value="${i}"${i===val?' selected':''}>${v}</option>`).join('');
+}
+
+const EX_REPS_ITEMS=['—','5회','6회','7회','8회','9회','10회','11회','12회','13회','14회','15회','16회','17회','18회','20회','25회','30회'];
+const EX_SETS_ITEMS=['—','1세트','2세트','3세트','4세트','5세트','6세트'];
+const EX_H_ITEMS=['0시간','1시간','2시간','3시간'];
+const EX_M_ITEMS=['0분','5분','10분','15분','20분','25분','30분','35분','40분','45분','50분','55분'];
+
+function renderExCards(cat){
+  const container=document.getElementById('ex-cards-'+cat);
+  const entries=Object.entries(exData[cat]);
+  if(!entries.length){container.innerHTML='';return;}
+  container.innerHTML=entries.map(([name,d])=>{
+    const k=_exKey(name);
+    const safeN=name.replace(/\\/g,'\\\\').replace(/'/g,"\\'");
+    return `<div class="ex-card">
+      <div class="ex-card-header">
+        <span class="ex-card-name">${name}</span>
+        <button class="ex-card-del" onclick="removeExCard('${cat}','${safeN}')">×</button>
+      </div>
+      <div class="ex-sel-row">
+        <div class="ex-sel-col">
+          <div class="ex-card-lbl">횟수</div>
+          <select class="ex-sel" onchange="exData['${cat}']['${safeN}'].reps=+this.value">
+            ${_makeOpts(EX_REPS_ITEMS, d.reps||0)}
+          </select>
+        </div>
+        <div class="ex-card-sep">·</div>
+        <div class="ex-sel-col">
+          <div class="ex-card-lbl">세트</div>
+          <select class="ex-sel" onchange="exData['${cat}']['${safeN}'].sets=+this.value">
+            ${_makeOpts(EX_SETS_ITEMS, d.sets||0)}
+          </select>
+        </div>
+        <div class="ex-card-sep">·</div>
+        <div class="ex-sel-col">
+          <div class="ex-card-lbl">시간</div>
+          <select class="ex-sel" onchange="exData['${cat}']['${safeN}'].h=+this.value">
+            ${_makeOpts(EX_H_ITEMS, d.h||0)}
+          </select>
+        </div>
+        <div class="ex-sel-col">
+          <div class="ex-card-lbl">분</div>
+          <select class="ex-sel" onchange="exData['${cat}']['${safeN}'].m=+this.value">
+            ${_makeOpts(EX_M_ITEMS, d.m||0)}
+          </select>
+        </div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function loadExData(cat, saved){
+  exData[cat]={};
+  if(!saved) return;
+  Object.entries(saved).forEach(([name,d])=>{
+    exData[cat][name]=d;
+    const chip=document.querySelector(`.ex-chip[data-cat="${cat}"][data-name="${name}"]`);
+    if(chip){chip.className='ex-chip';chip.classList.add('sel-'+cat);}
+  });
+  renderExCards(cat);
+}
+
+function getExDataForSave(cat){
+  return Object.keys(exData[cat]).length ? {...exData[cat]} : null;
+}
+
+function getExTotalMins(cat){
+  return Object.values(exData[cat]).reduce((s,d)=>s+(d.h||0)*60+(d.m||0)*5,0);
+}
 
 // 상체·하체·유산소·애플워치 진행 여부
 const didCat={upper:false,lower:false,cardio:false,watch:false};
@@ -1007,10 +1107,8 @@ const H_ITEMS=[...Array(4)].map((_,i)=>i+'시간');
 const M_ITEMS=['0분','5분','10분','15분','20분','25분','30분','35분','40분','45분','50분','55분'];
 
 function buildTimePickers(){
-  ['upper','lower','cardio'].forEach(cat=>{
-    _buildDrum(`${cat}-h`,H_ITEMS,()=>updateTD(cat));
-    _buildDrum(`${cat}-m`,M_ITEMS,()=>updateTD(cat));
-  });
+  _buildDrum('cardio-h',H_ITEMS,()=>updateTD('cardio'));
+  _buildDrum('cardio-m',M_ITEMS,()=>updateTD('cardio'));
 }
 
 function updateTD(cat){
@@ -1030,7 +1128,6 @@ function getTimeVal(cat){
 }
 
 function buildDrums(){
-  buildRSPickers();
   buildTimePickers();
 }
 
@@ -1038,21 +1135,19 @@ function saveEntry(){
   if(!selectedDate)return;
   const getChips=cat=>[...document.querySelectorAll(`.ex-chip.sel-${cat}`)].map(c=>c.textContent);
   const gw=id=>{const v=document.getElementById('w-'+id).value.trim();return v?Number(v):undefined;};
+  // 상체·하체 시간: 카드별 시간 합산
+  const upperMins=getExTotalMins('upper');
+  const lowerMins=getExTotalMins('lower');
   db[selectedDate]={
     meals:{morning:document.getElementById('meal-morning').value.trim(),noon:document.getElementById('meal-noon').value.trim(),evening:document.getElementById('meal-evening').value.trim(),snack:document.getElementById('meal-snack').value.trim()},
     workout:workoutDone,
     didCat:{upper:didCat.upper, lower:didCat.lower, cardio:didCat.cardio, watch:didCat.watch},
-    exercises:{upper:getChips('upper'),lower:getChips('lower'),cardio:getChips('cardio')},
-    customUpper:document.getElementById('custom-upper').value.trim(),
-    customLower:document.getElementById('custom-lower').value.trim(),
+    exDetail:{upper:getExDataForSave('upper'), lower:getExDataForSave('lower')},
+    exercises:{cardio:getChips('cardio')},
     customCardio:document.getElementById('custom-cardio').value.trim(),
-    repsSets:{
-      upper:getRSValue('upper'),
-      lower:getRSValue('lower'),
-    },
     time:{
-      upper:getTimeVal('upper'),
-      lower:getTimeVal('lower'),
+      upper:{h:Math.floor(upperMins/60), m:upperMins%60},
+      lower:{h:Math.floor(lowerMins/60), m:lowerMins%60},
       cardio:getTimeVal('cardio'),
     },
     watch:{
