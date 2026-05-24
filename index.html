@@ -426,7 +426,7 @@ html,body{height:100%;width:100%;background:var(--bg);color:var(--text);font-fam
 
       <!-- 애플워치 -->
       <div class="block" id="catblock-watch">
-        <div class="block-title">❤️ 심박수 기록 <button class="cat-did-btn" id="did-watch" onclick="toggleDidCat('watch')" style="font-size:10px;padding:3px 10px;margin-left:6px;vertical-align:middle">미진행</button></div>
+        <div class="block-title">⌚ 애플워치 기록 <button class="cat-did-btn" id="did-watch" onclick="toggleDidCat('watch')" style="font-size:10px;padding:3px 10px;margin-left:6px;vertical-align:middle">미진행</button></div>
 
         <div class="watch-metrics">
           <div class="metric-card">
@@ -1250,6 +1250,20 @@ function autoResize(el){el.style.height='auto';el.style.height=el.scrollHeight+'
   document.getElementById('today-label').textContent=`${t.getFullYear()}.${String(t.getMonth()+1).padStart(2,'0')}.${String(t.getDate()).padStart(2,'0')} ${days[t.getDay()]}`;
   buildDrums();
   renderCalendar();
+  // Service Worker 등록
+  if('serviceWorker' in navigator){
+    navigator.serviceWorker.register('./sw.js')
+      .then(reg=>{
+        reg.addEventListener('updatefound',()=>{
+          const newWorker=reg.installing;
+          newWorker.addEventListener('statechange',()=>{
+            if(newWorker.state==='installed'&&navigator.serviceWorker.controller){
+              showSnack('🔄 새 버전이 있어요. 앱을 재시작해주세요!');
+            }
+          });
+        });
+      });
+  }
 })();
 </script>
 </body>
