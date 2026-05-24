@@ -63,7 +63,7 @@ html,body{height:100%;width:100%;background:var(--bg);color:var(--text);font-fam
 .stats-section{padding:12px 16px;border-bottom:1px solid var(--border);display:flex;flex-direction:column;gap:8px}
 .stats-row3{display:flex;gap:8px}
 .stats-row2{display:flex;gap:8px}
-.stat-chip{flex:1;background:var(--surface);border-radius:var(--radius-sm);border:1px solid var(--border);padding:10px 8px;text-align:center;transition:background .15s,transform .1s}
+.stat-chip{flex:1;background:var(--surface);border-radius:var(--radius-sm);border:1px solid var(--border);padding:10px 8px;text-align:center;transition:background .15s,transform .1s;display:flex;flex-direction:column;align-items:center;justify-content:center}
 .stat-chip.tappable{cursor:pointer;border-color:var(--border2)}
 .stat-chip.tappable:active{background:var(--surface2);transform:scale(.97)}
 .stat-val{font-size:20px;font-weight:700;color:var(--accent2);font-family:'DM Mono',monospace}
@@ -278,31 +278,9 @@ html,body{height:100%;width:100%;background:var(--bg);color:var(--text);font-fam
           <div class="stat-val" id="stat-workout">0</div>
           <div class="stat-lbl">이번달 운동</div>
         </div>
-        <div class="stat-chip tappable" onclick="openDrill('meal')">
-          <div class="stat-val" id="stat-meal">0</div>
-          <div class="stat-lbl">식단 기록</div>
-        </div>
-        <div class="stat-chip tappable" onclick="openDrill('time')">
+<div class="stat-chip tappable" onclick="openDrill('time')">
           <div class="stat-val" id="stat-time">0h</div>
           <div class="stat-lbl">총 운동 시간</div>
-        </div>
-      </div>
-      <!-- Row 2: heart rate -->
-      <div class="stats-row2">
-        <div class="stat-chip-wide">
-          <div class="stat-wide-ico">❤️</div>
-          <div class="stat-wide-body">
-            <div class="stat-wide-row">
-              <span class="stat-wide-lbl">평균 심박수</span>
-              <span class="stat-wide-val" id="stat-hr-avg">—</span>
-              <span class="stat-wide-unit">bpm</span>
-            </div>
-            <div class="stat-wide-row">
-              <span class="stat-wide-lbl">최대 심박수 평균</span>
-              <span class="stat-wide-val" id="stat-hr-max">—</span>
-              <span class="stat-wide-unit">bpm</span>
-            </div>
-          </div>
         </div>
       </div>
     </div>
@@ -606,10 +584,8 @@ function renderCalendar(){
   for(let d=1;d<=days;d++){
     const key=dateKey(curYear,curMonth,d), e=db[key]||{};
     const isToday=key===todayStr(), isSel=selectedDate===key;
-    const hasMeal=e.meals&&(e.meals.morning||e.meals.noon||e.meals.evening||e.meals.snack);
     let cls='day-cell'+(isToday?' today':'')+(isSel?' selected':'');
     let dots='';
-    if(hasMeal) dots+='<div class="dot dot-meal"></div>';
     if(e.workout===true) dots+='<div class="dot dot-workout"></div>';
     html+=`<div class="${cls}" onclick="selectDay(${curYear},${curMonth},${d})"><div class="day-num">${d}</div><div class="day-dots">${dots}</div></div>`;
   }
@@ -624,31 +600,21 @@ function changeMonth(dir){
 }
 
 function renderStats(){
-  let workouts=0,meals=0,totalMins=0;
-  let hrAvgSum=0,hrAvgCnt=0,hrMaxSum=0,hrMaxCnt=0;
+  let workouts=0,totalMins=0;
   const days=new Date(curYear,curMonth+1,0).getDate();
   for(let d=1;d<=days;d++){
     const e=db[dateKey(curYear,curMonth,d)]||{};
     if(e.workout===true) workouts++;
-    if(e.meals&&(e.meals.morning||e.meals.noon||e.meals.evening)) meals++;
     if(e.time){
       ['upper','lower','cardio'].forEach(cat=>{
         if(!((e.didCat||{})[cat])) return;
         const t=e.time[cat]||{}; totalMins+=(t.h||0)*60+(t.m||0);
       });
     }
-    if(e.watch){
-      if(e.watch.hrAvg){hrAvgSum+=e.watch.hrAvg;hrAvgCnt++;}
-      if(e.watch.hrMax){hrMaxSum+=e.watch.hrMax;hrMaxCnt++;}
-    }
   }
-  const t=new Date();
   document.getElementById('stat-workout').textContent=workouts;
-  document.getElementById('stat-meal').textContent=meals;
   const h=Math.floor(totalMins/60), m=totalMins%60;
   document.getElementById('stat-time').textContent=totalMins===0?'0분':(h>0?(h+'시간'+(m>0?' '+m+'분':'')):(m+'분'));
-  document.getElementById('stat-hr-avg').textContent=hrAvgCnt>0?Math.round(hrAvgSum/hrAvgCnt):'—';
-  document.getElementById('stat-hr-max').textContent=hrMaxCnt>0?Math.round(hrMaxSum/hrMaxCnt):'—';
 }
 
 // DRILL DOWN
@@ -722,21 +688,6 @@ function openDrill(type){
           <div class="drill-item-row">${cats.join('')}${hr}</div>
           ${exList?`<div class="drill-item-body" style="margin-top:6px">${exList}</div>`:''}
           ${e.memo?`<div class="drill-item-body" style="color:var(--text3);margin-top:4px">${e.memo}</div>`:''}
-        </div>`;
-      }).join('');
-    }
-  } else if(type==='meal'){
-    title='🍽️ 이번달 식단 기록';
-    const mEntries=entries.filter(({e})=>e.meals&&(e.meals.morning||e.meals.noon||e.meals.evening||e.meals.snack));
-    if(!mEntries.length){html='<div class="drill-empty">이번달 식단 기록이 없어요</div>';}
-    else{
-      html+=`<div class="drill-summary"><div class="drill-sum-item"><div class="drill-sum-val">${mEntries.length}</div><div class="drill-sum-lbl">기록 일수</div></div><div class="drill-sum-item"><div class="drill-sum-val">${Math.round(mEntries.length/new Date(curYear,curMonth+1,0).getDate()*100)}%</div><div class="drill-sum-lbl">이번달 달성률</div></div></div>`;
-      html+=mEntries.map(({key,e})=>{
-        const m=e.meals||{};
-        const rows=[['아침',m.morning],['점심',m.noon],['저녁',m.evening],['간식',m.snack]].filter(([,v])=>v);
-        return `<div class="drill-item" onclick="selectDay(...'${key}'.split('-').map((v,i)=>i===1?parseInt(v)-1:parseInt(v)));closeDrill()">
-          <div class="drill-item-header"><span class="drill-item-date">${fmtDate(key)}</span></div>
-          <div class="drill-meal-grid">${rows.map(([slot,val])=>`<span class="drill-meal-slot">${slot}</span><span class="drill-meal-val">${val}</span>`).join('')}</div>
         </div>`;
       }).join('');
     }
