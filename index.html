@@ -11,6 +11,19 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="manifest" href="./manifest.json">
+<script src="https://cdn.onesignal.com/sdks/web/v16/OneSignalSDK.page.js" defer></script>
+<script>
+  window.OneSignalDeferred = window.OneSignalDeferred || [];
+  OneSignalDeferred.push(async function(OneSignal) {
+    await OneSignal.init({
+      appId: '8b8922ed-cb3d-464e-8f51-3c442de20a69',
+      serviceWorkerParam: { scope: '/' },
+      serviceWorkerPath: 'sw.js',
+    });
+    refreshNotifBtn();
+  });
+</script>
 <style>
 :root {
   --bg:#0f0f1a; --bg2:#1a1a2e; --surface:#1e2440; --surface2:#252d4a;
@@ -484,6 +497,19 @@ html,body{height:100%;width:100%;background:var(--bg);color:var(--text);font-fam
       <button class="close-btn" onclick="closeSettings()">✕</button>
     </div>
     <div class="sheet-body">
+      <div class="block">
+        <div class="block-title">🔔 알림 설정</div>
+        <p style="font-size:12px;color:var(--text3);line-height:1.7;margin-bottom:14px">운동하는 날 오전에 알림을 받아요.<br><strong style="color:var(--accent2)">iPhone</strong>은 홈 화면에 추가한 후 구독하세요 (iOS 16.4+).</p>
+        <button id="notif-btn" class="settings-action-btn" onclick="toggleNotification()" style="border-color:rgba(108,99,255,.25)">
+          <div class="settings-action-ico" id="notif-ico">🔕</div>
+          <div class="settings-action-body">
+            <div class="settings-action-title" id="notif-title">알림 구독하기</div>
+            <div class="settings-action-desc" id="notif-desc">운동하는 날 오전 알림을 받아요</div>
+          </div>
+          <div class="settings-action-arrow" id="notif-arrow">›</div>
+        </button>
+      </div>
+
       <div class="block">
         <div class="block-title">💾 데이터 백업</div>
         <p style="font-size:12px;color:var(--text3);line-height:1.7;margin-bottom:14px">앱을 새로 설치하거나 HTML을 업데이트할 때<br>기록이 사라지지 않도록 미리 백업하세요.</p>
@@ -1162,8 +1188,41 @@ function saveEntry(){
 
 function openSettings(){
   document.getElementById('settings-count').textContent=Object.keys(db).length+'일';
+  refreshNotifBtn();
   document.getElementById('settings-overlay').classList.add('open');
   document.body.style.overflow='hidden';
+}
+
+function refreshNotifBtn(){
+  const subscribed = window.OneSignal?.User?.PushSubscription?.optedIn ?? false;
+  _applyNotifBtn(subscribed);
+}
+
+function _applyNotifBtn(subscribed){
+  document.getElementById('notif-ico').textContent   = subscribed ? '🔔' : '🔕';
+  document.getElementById('notif-title').textContent = subscribed ? '알림 구독 중' : '알림 구독하기';
+  document.getElementById('notif-desc').textContent  = subscribed ? '운동하는 날 오전 알림이 켜져 있어요' : '운동하는 날 오전 알림을 받아요';
+  const arrow = document.getElementById('notif-arrow');
+  arrow.textContent = subscribed ? '✓' : '›';
+  arrow.style.color = subscribed ? 'var(--green)' : 'var(--text3)';
+}
+
+async function toggleNotification(){
+  if(!window.OneSignal){ showSnack('알림 기능을 불러오는 중이에요'); return; }
+  try{
+    const subscribed = window.OneSignal.User.PushSubscription.optedIn;
+    if(subscribed){
+      await window.OneSignal.User.PushSubscription.optOut();
+      _applyNotifBtn(false);
+      showSnack('🔕 알림을 해제했어요');
+    } else {
+      await window.OneSignal.Notifications.requestPermission();
+      const now = window.OneSignal.User.PushSubscription.optedIn;
+      _applyNotifBtn(now);
+      if(now) showSnack('🔔 알림이 설정됐어요!');
+      else showSnack('알림 권한이 거부됐어요');
+    }
+  } catch(e){ showSnack('알림 설정 중 오류가 발생했어요'); }
 }
 function closeSettings(){document.getElementById('settings-overlay').classList.remove('open');document.body.style.overflow='';}
 function handleSettingsClick(e){if(e.target===document.getElementById('settings-overlay'))closeSettings();}

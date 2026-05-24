@@ -1,3 +1,5 @@
+importScripts('https://cdn.onesignal.com/sdks/web/v16/OneSignalSDK.sw.js');
+
 // ── 버전을 바꾸면 캐시가 자동으로 갱신돼요 ──
 const VERSION = 'v1';
 const CACHE = `workout-log-${VERSION}`;

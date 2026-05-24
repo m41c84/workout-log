@@ -1,0 +1,10 @@
+{
+  "name": "운동일지",
+  "short_name": "운동일지",
+  "description": "운동 루틴 기록 앱",
+  "start_url": "./",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#0f0f1a",
+  "theme_color": "#0f0f1a"
+}
