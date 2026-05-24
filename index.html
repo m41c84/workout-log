@@ -55,6 +55,7 @@ html,body{height:100%;width:100%;background:var(--bg);color:var(--text);font-fam
 .settings-action-title{font-size:14px;font-weight:600;color:var(--text);margin-bottom:2px}
 .settings-action-desc{font-size:11px;color:var(--text3)}
 .settings-action-arrow{font-size:18px;color:var(--text3)}
+.day-row{display:flex;gap:6px;margin-top:14px}.day-btn{flex:1;padding:8px 4px;border-radius:8px;border:1px solid var(--border);background:var(--surface);color:var(--text3);font-size:12px;font-weight:600;cursor:pointer;font-family:'Noto Sans KR',sans-serif;transition:background .15s,color .15s,border-color .15s}.day-btn.active{background:rgba(108,99,255,.2);border-color:var(--accent);color:var(--accent)}
 
 .scroll-area{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch}
 
@@ -508,6 +509,18 @@ html,body{height:100%;width:100%;background:var(--bg);color:var(--text);font-fam
           </div>
           <div class="settings-action-arrow" id="notif-arrow">›</div>
         </button>
+        <div id="notif-days-section" style="display:none">
+          <p style="font-size:11px;color:var(--text3);margin:12px 0 8px">알림 받을 요일 선택</p>
+          <div class="day-row">
+            <button class="day-btn" data-day="sun" onclick="toggleDay(this)">일</button>
+            <button class="day-btn" data-day="mon" onclick="toggleDay(this)">월</button>
+            <button class="day-btn" data-day="tue" onclick="toggleDay(this)">화</button>
+            <button class="day-btn" data-day="wed" onclick="toggleDay(this)">수</button>
+            <button class="day-btn" data-day="thu" onclick="toggleDay(this)">목</button>
+            <button class="day-btn" data-day="fri" onclick="toggleDay(this)">금</button>
+            <button class="day-btn" data-day="sat" onclick="toggleDay(this)">토</button>
+          </div>
+        </div>
       </div>
 
       <div class="block">
@@ -1205,6 +1218,9 @@ function _applyNotifBtn(subscribed){
   const arrow = document.getElementById('notif-arrow');
   arrow.textContent = subscribed ? '✓' : '›';
   arrow.style.color = subscribed ? 'var(--green)' : 'var(--text3)';
+  const sec = document.getElementById('notif-days-section');
+  if(sec){ sec.style.display = subscribed ? 'block' : 'none'; }
+  if(subscribed) loadNotifDays();
 }
 
 async function toggleNotification(){
@@ -1224,6 +1240,32 @@ async function toggleNotification(){
     }
   } catch(e){ showSnack('알림 설정 중 오류가 발생했어요'); }
 }
+
+const DAYS=['sun','mon','tue','wed','thu','fri','sat'];
+let notifDays=JSON.parse(localStorage.getItem('notif_days')||'{}');
+
+function loadNotifDays(){
+  DAYS.forEach(d=>{
+    const btn=document.querySelector(`.day-btn[data-day="${d}"]`);
+    if(btn) btn.classList.toggle('active',notifDays[d]==='1');
+  });
+}
+
+function toggleDay(btn){
+  const d=btn.dataset.day;
+  notifDays[d]=notifDays[d]==='1'?'0':'1';
+  btn.classList.toggle('active',notifDays[d]==='1');
+  localStorage.setItem('notif_days',JSON.stringify(notifDays));
+  updateOneSignalTags();
+}
+
+async function updateOneSignalTags(){
+  if(!window.OneSignal?.User?.addTags) return;
+  const tags={};
+  DAYS.forEach(d=>{ tags[`workout_${d}`]=notifDays[d]||'0'; });
+  try{ await window.OneSignal.User.addTags(tags); } catch(e){}
+}
+
 function closeSettings(){document.getElementById('settings-overlay').classList.remove('open');document.body.style.overflow='';}
 function handleSettingsClick(e){if(e.target===document.getElementById('settings-overlay'))closeSettings();}
 
