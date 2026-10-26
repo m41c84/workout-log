@@ -6,24 +6,24 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="운동일지">
-<meta name="theme-color" content="#0f0f1a">
+<meta name="theme-color" content="#000000">
 <title>운동일지</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Noto+Sans+KR:wght@400;500;700&display=swap" rel="stylesheet">
 <link rel="manifest" href="./manifest.json">
 <style>
 :root {
-  --bg:#0f0f1a; --bg2:#1a1a2e; --surface:#1e2440; --surface2:#252d4a;
-  --border:rgba(255,255,255,0.08); --border2:rgba(255,255,255,0.14);
-  --accent:#6c63ff; --accent2:#a89cff;
-  --green:#4ade80; --amber:#fbbf24; --red:#f87171; --blue:#60a5fa;
-  --text:#f0f0ff; --text2:#9999bb; --text3:#6666aa;
-  --radius:16px; --radius-sm:10px;
+  --bg:#000000; --bg2:#111111; --surface:#111111; --surface2:#2a2a2a;
+  --border:#1a1a1a; --border2:#444444;
+  --accent:#c6f24e; --accent2:#c6f24e;
+  --green:#c6f24e; --amber:#e5a93b; --red:#e5484d; --blue:#60a5fa;
+  --text:#ffffff; --text2:#b4b4b4; --text3:#949494;
+  --radius:20px; --radius-sm:12px;
   --safe-top:env(safe-area-inset-top,0px); --safe-bottom:env(safe-area-inset-bottom,0px);
 }
 *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
-html,body{height:100%;width:100%;background:var(--bg);color:var(--text);font-family:'Noto Sans KR',sans-serif;overflow:hidden;position:fixed;inset:0}
+html,body{height:100%;width:100%;background:var(--bg);color:var(--text);font-family:'Inter','Noto Sans KR',system-ui,sans-serif;overflow:hidden;position:fixed;inset:0}
 #app{display:flex;flex-direction:column;height:100%;padding-top:var(--safe-top);padding-bottom:var(--safe-bottom)}
 
 .header{display:flex;align-items:center;justify-content:space-between;padding:16px 20px 12px;border-bottom:1px solid var(--border);flex-shrink:0}
@@ -55,8 +55,8 @@ html,body{height:100%;width:100%;background:var(--bg);color:var(--text);font-fam
 .day-cell{aspect-ratio:1;border-radius:12px;display:flex;flex-direction:column;align-items:center;justify-content:center;cursor:pointer;transition:background .15s,transform .1s;gap:3px}
 .day-cell:active{transform:scale(.93)}.day-cell.empty{pointer-events:none}
 .day-cell.today{background:var(--surface2)}.day-cell.today .day-num{color:var(--accent2);font-weight:700}
-.day-cell.selected{background:var(--accent)!important}.day-cell.selected .day-num{color:#fff!important}
-.day-num{font-size:15px;font-weight:500;color:var(--text);font-family:'DM Mono',monospace;line-height:1}
+.day-cell.selected{background:var(--accent)!important}.day-cell.selected .day-num{color:#000!important}
+.day-num{font-size:15px;font-weight:500;color:var(--text);font-variant-numeric:tabular-nums;line-height:1}
 .day-cell:nth-child(7n+1) .day-num{color:var(--red)}.day-cell:nth-child(7n) .day-num{color:var(--blue)}
 .day-cell.selected .day-num{color:#fff!important}
 .day-dots{display:flex;gap:2px}.dot{width:4px;height:4px;border-radius:50%}
@@ -68,7 +68,7 @@ html,body{height:100%;width:100%;background:var(--bg);color:var(--text);font-fam
 .stat-chip{flex:1;background:var(--surface);border-radius:var(--radius-sm);border:1px solid var(--border);padding:10px 8px;text-align:center;transition:background .15s,transform .1s}
 .stat-chip.tappable{cursor:pointer;border-color:var(--border2)}
 .stat-chip.tappable:active{background:var(--surface2);transform:scale(.97)}
-.stat-val{font-size:20px;font-weight:700;color:var(--accent2);font-family:'DM Mono',monospace}
+.stat-val{font-size:20px;font-weight:600;color:var(--accent2);font-variant-numeric:tabular-nums}
 .stat-lbl{font-size:10px;color:var(--text3);margin-top:2px}
 .stat-tap-hint{font-size:9px;color:var(--text3);margin-top:3px;opacity:.7}
 .stat-chip-wide{flex:2;background:var(--surface);border-radius:var(--radius-sm);border:1px solid var(--border);padding:10px 12px;display:flex;align-items:center;gap:10px}
@@ -76,7 +76,7 @@ html,body{height:100%;width:100%;background:var(--bg);color:var(--text);font-fam
 .stat-wide-body{flex:1;display:flex;flex-direction:column;gap:5px}
 .stat-wide-row{display:flex;align-items:baseline;gap:4px}
 .stat-wide-lbl{font-size:10px;color:var(--text3);flex:1}
-.stat-wide-val{font-size:16px;font-weight:700;color:var(--red);font-family:'DM Mono',monospace}
+.stat-wide-val{font-size:16px;font-weight:600;color:var(--red);font-variant-numeric:tabular-nums}
 .stat-wide-unit{font-size:10px;color:var(--text3)}
 
 /* DRILL DOWN */
@@ -97,20 +97,20 @@ html,body{height:100%;width:100%;background:var(--bg);color:var(--text);font-fam
 .drill-meal-val{font-size:12px;color:var(--text2)}
 .drill-summary{background:var(--surface2);border-radius:var(--radius-sm);padding:12px 14px;margin-bottom:14px;display:grid;grid-template-columns:1fr 1fr;gap:8px}
 .drill-sum-item{text-align:center}
-.drill-sum-val{font-size:18px;font-weight:700;color:var(--accent2);font-family:'DM Mono',monospace}
+.drill-sum-val{font-size:18px;font-weight:600;color:var(--accent2);font-variant-numeric:tabular-nums}
 .drill-sum-lbl{font-size:10px;color:var(--text3);margin-top:2px}
 
-.section-head{padding:16px 20px 8px;font-size:12px;font-weight:500;letter-spacing:.08em;color:var(--text3);text-transform:uppercase}
+.section-head{padding:16px 20px 8px;font-size:12px;font-weight:500;color:var(--text3)}
 .log-item{margin:0 16px 8px;background:var(--surface);border-radius:var(--radius-sm);border:1px solid var(--border);padding:12px 14px;cursor:pointer;display:flex;align-items:center;gap:12px}
 .log-item:active{background:var(--surface2)}
 
 
 .log-info{flex:1}.log-tags{display:flex;gap:4px;flex-wrap:wrap;margin-top:6px}
 .tag{font-size:10px;padding:2px 8px;border-radius:20px;font-weight:500}
-.tag-upper{background:rgba(108,99,255,.2);color:var(--accent2)}
+.tag-upper{background:rgba(198,242,78,.12);color:var(--accent2)}
 .tag-lower{background:rgba(251,191,36,.2);color:var(--amber)}
 .tag-cardio{background:rgba(74,222,128,.2);color:var(--green)}
-.tag-meal{background:rgba(248,113,113,.2);color:var(--red)}
+.tag-meal{background:rgba(229,72,77,.15);color:var(--red)}
 .tag-watch{background:rgba(96,165,250,.15);color:var(--blue)}
 .log-title{font-size:15px;font-weight:600;color:var(--text);letter-spacing:-.2px}
 .log-time{font-size:12px;font-weight:500;color:var(--accent2);font-family:'DM Mono',monospace;margin-left:6px;vertical-align:middle}
@@ -132,12 +132,12 @@ html,body{height:100%;width:100%;background:var(--bg);color:var(--text);font-fam
 .sheet-body{overflow-y:auto;-webkit-overflow-scrolling:touch;flex:1;padding:16px 20px 20px}
 
 .block{margin-bottom:24px}
-.block-title{font-size:12px;font-weight:500;letter-spacing:.08em;color:var(--text3);text-transform:uppercase;margin-bottom:10px;display:flex;align-items:center;gap:6px}
+.block-title{font-size:12px;font-weight:500;color:var(--text3);margin-bottom:10px;display:flex;align-items:center;gap:6px}
 .block-title::after{content:'';flex:1;height:1px;background:var(--border)}
 
 .workout-toggle{display:flex;background:var(--surface);border-radius:var(--radius-sm);border:1px solid var(--border);overflow:hidden}
 .wt-btn{flex:1;padding:12px 0;text-align:center;cursor:pointer;font-size:14px;font-weight:500;color:var(--text2);transition:all .2s;border:none;background:transparent;font-family:'Noto Sans KR',sans-serif}
-.wt-btn.active{background:var(--accent);color:#fff}.wt-btn.active-no{background:var(--surface2);color:var(--red)}
+.wt-btn.active{background:var(--accent);color:#000}.wt-btn.active-no{background:var(--surface2);color:var(--red)}
 
 .meal-row{display:flex;align-items:flex-start;gap:10px;margin-bottom:10px}
 .meal-lbl{font-size:11px;color:var(--text3);font-weight:500;min-width:28px;padding-top:10px;text-align:center}
@@ -149,7 +149,7 @@ html,body{height:100%;width:100%;background:var(--bg);color:var(--text);font-fam
 .cat-block:last-child{border-bottom:none}
 .cat-header{display:flex;align-items:center;gap:8px;margin-bottom:10px}
 .cat-icon{width:28px;height:28px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:14px;flex-shrink:0}
-.cat-icon-upper{background:rgba(108,99,255,.2)}.cat-icon-lower{background:rgba(251,191,36,.2)}.cat-icon-cardio{background:rgba(74,222,128,.2)}
+.cat-icon-upper{background:#222222}.cat-icon-lower{background:#222222}.cat-icon-cardio{background:rgba(198,242,78,.12)}
 .cat-name{font-size:14px;font-weight:500;color:var(--text)}
 .cat-did-btn{margin-left:auto;padding:4px 12px;border-radius:20px;font-size:11px;font-weight:600;border:1px solid var(--border2);background:var(--surface);color:var(--text3);cursor:pointer;transition:all .2s;font-family:'Noto Sans KR',sans-serif;-webkit-user-select:none;user-select:none}
 .cat-did-btn.did{background:rgba(74,222,128,.18);border-color:var(--green);color:var(--green)}
@@ -161,7 +161,7 @@ html,body{height:100%;width:100%;background:var(--bg);color:var(--text);font-fam
 .exercise-chips{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:10px}
 .ex-chip{padding:7px 13px;border-radius:20px;font-size:12px;font-weight:500;cursor:pointer;border:1px solid var(--border2);background:var(--surface);color:var(--text2);transition:all .15s;-webkit-user-select:none;user-select:none}
 .ex-chip:active{transform:scale(.94)}
-.ex-chip.sel-upper{background:rgba(108,99,255,.25);border-color:var(--accent);color:var(--accent2)}
+.ex-chip.sel-upper{background:rgba(198,242,78,.15);border-color:var(--accent);color:var(--accent)}
 .ex-chip.sel-lower{background:rgba(251,191,36,.2);border-color:var(--amber);color:var(--amber)}
 .ex-chip.sel-cardio{background:rgba(74,222,128,.15);border-color:var(--green);color:var(--green)}
 
@@ -204,7 +204,7 @@ html,body{height:100%;width:100%;background:var(--bg);color:var(--text);font-fam
 .ex-sel:focus{border-color:var(--accent)}
 
 .custom-ex-row{display:flex;gap:8px;align-items:center;margin-top:8px}
-.custom-ex-add{width:36px;height:36px;border-radius:50%;background:var(--accent);border:none;color:#fff;font-size:20px;cursor:pointer;flex-shrink:0;display:flex;align-items:center;justify-content:center;transition:opacity .15s}
+.custom-ex-add{width:36px;height:36px;border-radius:50%;background:var(--accent);border:none;color:#000;font-size:20px;cursor:pointer;flex-shrink:0;display:flex;align-items:center;justify-content:center;transition:opacity .15s}
 .custom-ex-add:active{opacity:.8}
 
 /* APPLE WATCH */
@@ -228,7 +228,7 @@ html,body{height:100%;width:100%;background:var(--bg);color:var(--text);font-fam
 .memo-input{width:100%;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-sm);color:var(--text);font-family:'Noto Sans KR',sans-serif;font-size:14px;padding:10px 12px;resize:none;height:80px;-webkit-appearance:none;outline:none;transition:border-color .15s}
 .memo-input:focus{border-color:var(--accent)}.memo-input::placeholder{color:var(--text3)}
 
-.save-btn{width:100%;margin-top:8px;padding:15px;background:var(--accent);border:none;border-radius:var(--radius);color:#fff;font-family:'Noto Sans KR',sans-serif;font-size:16px;font-weight:700;cursor:pointer;transition:opacity .15s,transform .1s}
+.save-btn{width:100%;margin-top:8px;padding:15px;background:var(--accent);border:none;border-radius:var(--radius);color:#000;font-family:'Inter','Noto Sans KR',sans-serif;font-size:16px;font-weight:600;cursor:pointer;transition:opacity .15s,transform .1s}
 .save-btn:active{opacity:.85;transform:scale(.98)}
 
 .snack{position:fixed;bottom:calc(20px + var(--safe-bottom));left:50%;transform:translateX(-50%) translateY(80px);background:var(--surface2);color:var(--text);padding:10px 20px;border-radius:30px;font-size:13px;font-weight:500;border:1px solid var(--border2);z-index:200;white-space:nowrap;transition:transform .3s}
@@ -243,7 +243,7 @@ html,body{height:100%;width:100%;background:var(--bg);color:var(--text);font-fam
 .backup-bar{display:flex;gap:8px;padding:12px 16px;border-top:1px solid var(--border);background:var(--bg)}
 .backup-btn{flex:1;display:flex;align-items:center;justify-content:center;gap:6px;padding:9px 0;border-radius:var(--radius-sm);font-family:'Noto Sans KR',sans-serif;font-size:13px;font-weight:500;cursor:pointer;border:1px solid var(--border2);transition:background .15s,transform .1s}
 .backup-btn:active{transform:scale(.97)}
-.backup-btn-export{background:rgba(108,99,255,.15);color:var(--accent2);border-color:rgba(108,99,255,.3)}
+.backup-btn-export{background:rgba(198,242,78,.1);color:var(--accent);border-color:rgba(198,242,78,.25)}
 .backup-btn-import{background:rgba(74,222,128,.1);color:var(--green);border-color:rgba(74,222,128,.25)}
 .backup-btn-ico{font-size:15px}
 
@@ -257,7 +257,7 @@ html,body{height:100%;width:100%;background:var(--bg);color:var(--text);font-fam
 .confirm-btns{display:flex;gap:8px}
 .confirm-btn{flex:1;padding:12px;border-radius:var(--radius-sm);font-family:'Noto Sans KR',sans-serif;font-size:14px;font-weight:600;cursor:pointer;border:none;transition:opacity .15s}
 .confirm-btn-cancel{background:var(--surface2);color:var(--text2)}
-.confirm-btn-ok{background:var(--accent);color:#fff}
+.confirm-btn-ok{background:var(--accent);color:#000}
 .confirm-btn-danger{background:var(--red);color:#fff}
 </style>
 </head>
@@ -265,7 +265,7 @@ html,body{height:100%;width:100%;background:var(--bg);color:var(--text);font-fam
 <div id="app">
   <div class="header">
     <div>
-      <div class="header-title">운동일지 💪</div>
+      <div class="header-title">운동일지</div>
       <div class="header-sub" id="today-label"></div>
     </div>
     <button class="settings-btn" onclick="openSettings()" aria-label="설정">
